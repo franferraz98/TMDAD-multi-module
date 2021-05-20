@@ -1,0 +1,4 @@
+com/example/multimodule/service/ServiceProperties.java
+ com.example.multimodule.service.ServiceProperties
+com/example/multimodule/service/MyService.java
+ com.example.multimodule.service.MyService
