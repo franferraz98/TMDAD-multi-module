@@ -44,7 +44,6 @@ public class WSRabbitApplication {
     }
 
 
-
     public static void main(String[] args) throws InterruptedException{
         SpringApplication.run(WSRabbitApplication.class, args);
     }
