@@ -1,6 +1,7 @@
 package com.example.multimodule.application;
 
 
+import com.example.multimodule.fileupload.FileController;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -23,6 +24,9 @@ public class Receiver {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private List<String> allQueueNames;
+
+    @Autowired
+    private FileController fileController;
 
     @Autowired
     private TopicExchange exchange;
@@ -72,6 +76,14 @@ public class Receiver {
     public void createChatRoom (final JsonMessage jsonMessage){
         String queueName = jsonMessage.getFrom();
         String exchangeName = jsonMessage.getText();
+
+        boolean b = fileController.newGroupInternal(exchangeName);
+
+        if(b){
+            System.out.println("ALMACENADO CON EXITO");
+        } else {
+            System.out.println("ERROR AL ALMACENAR");
+        }
 
         rabbitAdmin.deleteExchange(exchangeName);
         FanoutExchange exchange = new FanoutExchange(exchangeName);

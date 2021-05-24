@@ -1,5 +1,6 @@
 package com.example.multimodule.application;
 
+import com.example.multimodule.fileupload.ResponseFile;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -9,8 +10,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.example.multimodule")
 public class WSRabbitApplication {
+
+    private final ResponseFile r = new ResponseFile("name", "url", "type", 12);
 
     static final String topicExchangeName = "spring-boot-exchange";
 

@@ -1,0 +1,195 @@
+    package com.example.multimodule.fileupload;
+
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.hateoas.CollectionModel;
+    import org.springframework.hateoas.EntityModel;
+    import org.springframework.hateoas.IanaLinkRelations;
+    import org.springframework.http.HttpHeaders;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.web.bind.annotation.*;
+    import org.springframework.web.multipart.MultipartFile;
+    import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.Optional;
+    import java.util.stream.Collectors;
+
+    import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+    import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+    @RestController
+    public class FileController {
+
+        @Autowired
+        private FileStorageService storageService;
+
+        @Autowired
+        private FileDBUsuariosRepository repository;
+
+        @Autowired
+        private FileDBGrupoRepository repositoryGrupo;
+
+        @Autowired
+        private UserModelAssembler assembler;
+
+        @Autowired
+        private GroupModelAssembler assemblerGrupo;
+
+        @PostMapping("/upload")
+        public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
+            String message = "";
+            try {
+                FileDB a = storageService.store(file);
+
+                message = "Uploaded the file successfully: " + file.getOriginalFilename() + ". Share via id: " + a.getId();
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+            } catch (Exception e) {
+                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+            }
+        }
+
+        @GetMapping("/files")
+        public ResponseEntity<List<ResponseFile>> getListFiles() {
+            List<ResponseFile> files = storageService.getAllFiles().map(dbFile -> {
+                String fileDownloadUri = ServletUriComponentsBuilder
+                        .fromCurrentContextPath()
+                        .path("/files/")
+                        .path(dbFile.getId())
+                        .toUriString();
+
+                return new ResponseFile(
+                        dbFile.getName(),
+                        fileDownloadUri,
+                        dbFile.getType(),
+                        dbFile.getData().length);
+            }).collect(Collectors.toList());
+
+            return ResponseEntity.status(HttpStatus.OK).body(files);
+        }
+
+
+        @GetMapping("/files/{id}")
+        public ResponseEntity<byte[]> getFile(@PathVariable String id) {
+            FileDB fileDB = storageService.getFile(id);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")
+                    .body(fileDB.getData());
+        }
+
+        @GetMapping("/Usuarios")
+        CollectionModel<EntityModel<FileDbUsuarios>> all() {
+
+            List<EntityModel<FileDbUsuarios>> usuarios = repository.findAll().stream()
+                    .map(assembler::toModel)
+                    .collect(Collectors.toList());
+
+            return CollectionModel.of(usuarios, linkTo(methodOn(FileController.class).all()).withSelfRel());
+        }
+
+        @PostMapping("/Usuarios")
+        ResponseEntity<ResponseMessage> newUser(@RequestBody String newUser) {
+            String message = "";
+            try {
+                repository.save(new FileDbUsuarios(newUser.substring(5), "Cualquiera", "Contraseña", "Cola"));
+                message = "User sing in successfully: " + newUser;
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+            } catch (Exception e) {
+                message = "Could not sign in: " + newUser;
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+            }
+        }
+
+        @GetMapping("/Usuarios/{id}")
+        EntityModel<FileDbUsuarios> one(@PathVariable("id") Long id) {
+            System.out.println(id);
+            FileDbUsuarios Usuario = repository.findById(id)
+                    .orElseThrow(() -> new EmployeeNotFoundException(id));
+
+            return assembler.toModel(Usuario);
+        }
+
+        @PutMapping("/Usuarios/{id}")
+        @ResponseStatus(HttpStatus.CREATED)
+        ResponseEntity<?> replaceUser(@RequestBody FileDbUsuarios Usuario, @PathVariable Long id) {
+
+            FileDbUsuarios updatedUsuario = repository.findById(id) //
+                    .map(employee -> {
+                        employee.setName(Usuario.getName());
+                        employee.setGrupo(Usuario.getGrupo());
+                        return repository.save(employee);
+                    }) //
+                    .orElseGet(() -> {
+                        Usuario.setId(id);
+                        return repository.save(Usuario);
+                    });
+
+            EntityModel<FileDbUsuarios> entityModel = assembler.toModel(updatedUsuario);
+
+            return ResponseEntity //
+                    .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                    .body(entityModel);
+        }
+
+        @DeleteMapping("/Usuarios/{id}")
+        @ResponseStatus(HttpStatus.ACCEPTED)
+        ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+            repository.deleteById(id);
+
+            return ResponseEntity.noContent().build();
+        }
+
+        @GetMapping("/Grupos")
+        CollectionModel<EntityModel<FileDBGrupo>> allGroup() {
+
+            List<EntityModel<FileDBGrupo>> grupos = repositoryGrupo.findAll().stream()
+                    .map(assemblerGrupo::toModel)
+                    .collect(Collectors.toList());
+
+            return CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel());
+        }
+
+        // Nueva Función
+        public boolean newGroupInternal(String newGroup) {
+            String message = "";
+            ArrayList<FileDbUsuarios> ListaMiembros = null;
+            try {
+                repositoryGrupo.save(new FileDBGrupo(newGroup, "Lista", "Exchange", ListaMiembros));
+                return true;
+            } catch (Exception e) {
+                System.out.println("ERROR AL AÑADIR EL GRUPO: " + e.toString());
+                return false;
+            }
+        }
+
+        @PostMapping("/Grupos")
+        ResponseEntity<ResponseMessage> newGroup(@RequestBody String newGroup) {
+            String message = "";
+            ArrayList<FileDbUsuarios> ListaMiembros = null;
+            try {
+                repositoryGrupo.save(new FileDBGrupo(newGroup.substring(5), "Lista", "Exchange", ListaMiembros));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+            }
+        }
+
+        @PostMapping("/Grupo/{id}")
+        @ResponseStatus(HttpStatus.CREATED)
+        ResponseEntity<ResponseMessage> AddUser(@RequestBody Long MiembroID, @PathVariable Long id) {
+            try
+            {
+                Optional<FileDBGrupo> grupo = repositoryGrupo.findById(id);
+                Optional<FileDbUsuarios> miembro = repository.findById(MiembroID);
+
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Miembro añadido al grupro"));
+            }
+            catch (Exception e){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage("No se ha podido realizar la peticion"));
+            }
+
+        }
+    }

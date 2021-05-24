@@ -41,6 +41,11 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 
 	implementation group: 'org.springframework', name: 'spring-context', version: '5.3.7'
+	implementation project(':filesystem')
+
+	// implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+	// implementation 'org.springframework.boot:spring-boot-starter-security'
+	// implementation 'org.springframework.security:spring-security-test'
 }
 
 test {
