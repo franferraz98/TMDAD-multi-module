@@ -35,7 +35,7 @@ public class Runner {
         String[] parts = message.split(":::");
         String exchange = parts[parts.length - 1];
         String text = parts[0] + ":::";
-        for(int i = 1; i< parts.length-1; i++){
+        for(int i = 1; i< parts.length; i++){
             text += parts[i];
         }
         SimpleMessageConverter converter = new SimpleMessageConverter();
@@ -44,11 +44,11 @@ public class Runner {
     }
 
     public void notify(String message) throws Exception {
-        System.out.println("Sending message: <" + message + "> to a room");
+        System.out.println("Sending message: <" + message + "> to everyone");
         String[] parts = message.split(":::");
         String exchange = "notifications";
         String text = parts[0] + ":::";
-        for(int i = 1; i< parts.length-1; i++){
+        for(int i = 1; i < parts.length; i++){
             text += parts[i];
         }
         SimpleMessageConverter converter = new SimpleMessageConverter();

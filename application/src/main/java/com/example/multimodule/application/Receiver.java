@@ -116,8 +116,9 @@ public class Receiver {
         System.out.println("Received <" + message.toString() + ">");
         MessageProperties properties = message.getMessageProperties();
         String consumerQueue = properties.getConsumerQueue();
+        // String receivedExchange = properties.getReceivedExchange(); TODO: Anyadir esto
 
-        String destination = "/topic/" +  consumerQueue;
+        String destination = "/topic/" +  consumerQueue; // + "/" + receivedExchange;
         byte[] bytes = message.getBody();
         String body = new String(bytes);
         String[] parts = body.split(":::");

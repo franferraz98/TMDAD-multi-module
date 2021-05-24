@@ -4,15 +4,18 @@ var stompClient3 = null;
 var stompClient4 = null;
 var stompClient5 = null;
 
+var from = "";
+var username = "";
+
 function setConnected(connected) {
 
     document.getElementById('connect').disabled = connected;
     document.getElementById('disconnect').disabled = !connected;
     // document.getElementById('subscribe').disabled = !connected;
-    document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
-    document.getElementById('createRoomDiv').style.visibility = connected ? 'visible' : 'hidden';
+    // document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
+    // document.getElementById('createRoomDiv').style.visibility = connected ? 'visible' : 'hidden';
     document.getElementById('converRoomDiv').style.visibility = connected ? 'visible' : 'hidden';
-    document.getElementById('response').innerHTML = '';
+    // document.getElementById('response').innerHTML = '';
 }
 
 function setConnectedAdmin(connected) {
@@ -37,7 +40,7 @@ function connect() {
     // Subscribe to self queue
     var socket2 = new SockJS('/route');
     stompClient2 = Stomp.over(socket2);
-    var username = document.getElementById('username').value;
+    username = document.getElementById('username').value;
     var topic = '/topic/';
     topic = topic.concat(username);
 
@@ -112,7 +115,7 @@ function disconnectAdmin() {
 
 function subscribe() {
 
-    var username = document.getElementById('username').value;
+    username = document.getElementById('username').value;
     stompClient2.send("/app/route", {}, JSON.stringify({'from':username, 'text':username}));
     document.getElementById('subscribe').disabled = true;
 
@@ -120,20 +123,20 @@ function subscribe() {
 
 function subscribeAdmin() {
 
-    var username = 'admin';
+    username = 'admin';
     stompClient5.send("/app/notifications", {}, JSON.stringify({'from':username, 'text':username}));
     document.getElementById('subscribeAdmin').disabled = true;
 
 }
 
 function createRoom() {
-    var from = document.getElementById('from').value;
+    from = document.getElementById('from').value;
     var text = document.getElementById('chatRoom').value;
     stompClient3.send("/app/createRoom", {}, JSON.stringify({'from':from, 'text':text}));
 }
 
 function addToRoom() {
-    var from = document.getElementById('from').value;
+    from = document.getElementById('from').value;
     var text = document.getElementById('room').value;
     var user = document.getElementById('userToRoom').value;
     text = text.concat(':::');
@@ -143,14 +146,14 @@ function addToRoom() {
 
 function sendNotification() {
 
-    var from = 'notification';
+    from = 'notification';
     var text = document.getElementById('textNoti').value;
     stompClient5.send("/app/notify", {}, JSON.stringify({'from':from, 'text':text}));
 }
 
 function sendToRoom() {
 
-    var from = document.getElementById('from').value;
+    from = document.getElementById('from').value;
     var text = document.getElementById('textRoom').value;
     var dest = document.getElementById('destRoom').value
     from = from.concat('@');
@@ -162,7 +165,7 @@ function sendToRoom() {
 
 function sendMessage() {
 
-    var from = document.getElementById('from').value;
+    from = document.getElementById('from').value;
     var text = document.getElementById('text').value;
     text = text.concat(':::');
     text = text.concat(document.getElementById('destination').value);
@@ -176,4 +179,51 @@ function showMessageOutput(messageOutput) {
     p.style.wordWrap = 'break-word';
     p.appendChild(document.createTextNode(messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")"));
     response.appendChild(p);
+}
+
+function switchURL() {
+   window.location.href = 'https://www.w3schools.com';
+}
+
+function addURL() {
+    var URLs = {
+      url1: {
+        name: 'https://www.w3schools.com'
+      },
+      url2: {
+        name: 'https://www.w3schools.com'
+      },
+      url3: {
+        name: 'https://www.w3schools.com'
+      }
+    }
+
+    var list = function(URLs) {
+      for (var prop in URLs) {
+        console.log(prop.name)
+        document.getElementById('URLs').innerHTML += '<li>' + prop + ' URL: ' + URLs[prop].name + '</li>';
+      }
+    }
+    list(URLs);
+}
+
+function info() {
+    document.querySelector('html').setAttribute("from", from)
+    document.querySelector('html').setAttribute("username", username)
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", "/info", false ); // false for synchronous request
+    xmlHttp.send(null);
+    document.querySelector('html').innerHTML = xmlHttp.responseText;
+}
+
+function replaceHTML() {
+
+    var request = new XMLHttpRequest();
+    request.open("GET", "", false);
+    request.send(null);
+    var returnValue = request.responseText;
+
+    document.open();
+    document.write(NC);
+    document.close();
 }

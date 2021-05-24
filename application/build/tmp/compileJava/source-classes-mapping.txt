@@ -1,3 +1,6 @@
+com/example/multimodule/application/NavigationController.java
+ com.example.multimodule.application.NavigationController
+ com.example.multimodule.application.NavigationController$GroupSimulator
 com/example/multimodule/application/Receiver.java
  com.example.multimodule.application.Receiver
 com/example/multimodule/application/WebSocketConfig.java

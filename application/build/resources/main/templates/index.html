@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Application</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{styles/main.css}" rel="stylesheet"/>
+
+    <script src="js/sockjs.js"></script>
+    <script src="js/stomp.js"></script>
+    <script src="js/appNew.js"></script>
+
+</head>
+
+<body class="d-flex flex-column h-100" onload="instantConnect()">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<br />
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+
+<div>
+    <br />
+    <!--form th:action="@{/info}" method="get"><button type="submit">Info</button></form>
+    <form th:action="@{/group/1}" method="get"><button type="submit">Group1</button></form>
+
+    <form th:action="@{/group/1}" method="get">
+        <textarea  th:name="from" rows="1" cols="10" name="from"></textarea>
+        <button type="submit">From</button>
+    </form>
+    <br /-->
+    <div>
+        <input type="text" id="from" th:name="from" name="from" placeholder="Choose a nickname"/>
+        <input type="text" id="username" th:name="username" name="username" placeholder="Write your username..."/>
+        <button id="connect" onclick="connect();">Connect</button>
+        <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+        <!--button id="subscribe" disabled="disabled" onclick="subscribe();">Subscribe</button-->
+    </div>
+    <br />
+
+    <!--div> <button onclick="info();">Info</button> </div>
+    <br /-->
+    <!--br />
+    <div>
+        <ul id="URLs"> </ul>
+    </div>
+    <br />
+    <div> <button onclick="replaceHTML();">Replace HTML</button> </div>
+    <br /-->
+    <div id="createRoomDiv">
+        <input type="text" id="chatRoom" placeholder="Add new chatroom name..."/>
+        <button id="createRoom" onclick="createRoom();">Create Room</button>
+    </div>
+    <br />
+    <div id="conversationDiv">
+        <input type="text" id="destination" placeholder="Write your destination username..."/>
+        <input type="text" id="text" placeholder="Write a message..."/>
+        <button id="sendMessage" onclick="sendMessage();">Send</button>
+        <br />
+        <p id="response"></p>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous">
+</script>
+<script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js">
+</script>
+</body>
+</html>
