@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Application</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{styles/main.css}" rel="stylesheet"/>
+
+    <script src="js/sockjs.js"></script>
+    <script src="js/stomp.js"></script>
+    <script src="js/appAdmin.js"></script>
+
+</head>
+
+<body class="d-flex flex-column h-100">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<br />
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+
+<div>
+    <br />
+
+    <div id="superUser">
+        <input type="text" id="password" placeholder="Write the password..."/>
+        <button id="connectAdmin" onclick="connectToAdmin();">Connect Admin</button>
+        <button id="disconnectAdmin" disabled="disabled" onclick="disconnectAdmin();">Disconnect Admin</button>
+        <button id="subscribeAdmin" disabled="disabled" onclick="subscribeAdmin();">Subscribe Admin</button>
+    </div>
+    <br />
+    <div id="notificationsDiv">
+        <input type="text" id="textNoti" placeholder="Write a notification..."/>
+        <button id="sendNoti" onclick="sendNotification();">Send</button>
+    </div>
+    <br />
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous">
+</script>
+<script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js">
+</script>
+</body>
+</html>
