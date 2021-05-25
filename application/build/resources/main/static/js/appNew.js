@@ -51,6 +51,12 @@ function instantConnect() {
             stompClient.send("/app/route", {}, JSON.stringify({'from':username, 'text':username}));
             console.log('Sent');
         });
+        socket = new SockJS('/createRoom');
+        stompClientRC = Stomp.over(socket);
+        stompClientRC.connect({}, function(frame) {
+            setConnected(true);
+            console.log('Connected to group creator: ' + frame);
+        });
     }
 }
 
