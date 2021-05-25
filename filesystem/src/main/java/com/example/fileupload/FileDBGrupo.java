@@ -1,9 +1,7 @@
 package com.example.fileupload;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Table(name = "Grupos")
@@ -13,22 +11,23 @@ public class FileDBGrupo {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    private String Grupo;
+    private String name;
 
-    private String ListaColas;
+    private String listaColas;
 
-    private String Exchage;
+    private String exchage;
 
-    private ArrayList<FileDbUsuarios> Pertenece;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> pertenece = new HashSet<String>();;
 
     public FileDBGrupo() {
     }
 
-    public FileDBGrupo(String Grupo, String listaColas, String exchage, ArrayList<FileDbUsuarios> ListaUsuarios) {
-        this.Grupo = Grupo;
-        this.ListaColas = listaColas;
-        this.Exchage= exchage;
-        this.Pertenece = ListaUsuarios;
+    public FileDBGrupo(String Grupo, String listaColas, String exchage, String ListaUsuarios) {
+        this.name = Grupo;
+        this.listaColas = listaColas;
+        this.exchage= exchage;
+        this.pertenece.add(ListaUsuarios);
     }
 
     public Long getId() {
@@ -40,11 +39,11 @@ public class FileDBGrupo {
     }
 
     public String getGrupo() {
-        return Grupo;
+        return name;
     }
 
     public void setGrupo(String Grupo) {
-        this.Grupo = Grupo;
+        this.name = Grupo;
     }
     @Override
     public boolean equals(Object o) {
@@ -59,39 +58,40 @@ public class FileDBGrupo {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.Grupo);
+        return Objects.hash(this.id, this.name);
     }
 
     @Override
     public String toString() {
-        return "Usuario{" + "id=" + this.id + ", name='" + this.Grupo + '\'' + ", Grupo='" + this.Grupo + '\'' + '}';
+        return "Usuario{" + "id=" + this.id + ", name='" + this.name + '\'' + ", Grupo='" + this.name + '\'' + '}';
     }
 
 
     public String getListaColas() {
-        return ListaColas;
+        return listaColas;
     }
 
     public void setListaColas(String listaColas) {
-        ListaColas = listaColas;
+        this.listaColas = listaColas;
     }
 
     public String getExchage() {
-        return Exchage;
+        return exchage;
     }
 
     public void setExchage(String exchage) {
-        Exchage = exchage;
+        this.exchage = exchage;
     }
 
-    public List<FileDbUsuarios> getPertenece() {
-        return Pertenece;
+    public Set<String> getPertenece() {
+        return pertenece;
     }
 
-    public void setPertenece(ArrayList<FileDbUsuarios> pertenece) {
-        Pertenece = pertenece;
+    public void setPertenece(Set<String> pertenece) {
+        this.pertenece = pertenece;
     }
-    public void addMember(FileDbUsuarios miembro){
-        Pertenece.add(miembro);
+
+    public void addMember(String miembro){
+        pertenece.add(miembro);
     }
 }

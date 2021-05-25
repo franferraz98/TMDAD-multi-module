@@ -1,5 +1,8 @@
     package com.example.fileupload;
 
+    import net.minidev.json.JSONArray;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.hateoas.CollectionModel;
     import org.springframework.hateoas.EntityModel;
@@ -11,8 +14,8 @@
     import org.springframework.web.multipart.MultipartFile;
     import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-    import java.util.ArrayList;
     import java.util.List;
+    import java.util.Date;
     import java.util.Optional;
     import java.util.stream.Collectors;
 
@@ -24,6 +27,9 @@
 
         @Autowired
         private FileStorageService storageService;
+
+        @Autowired
+        private MessageDBRepository Messagerepository;
 
         @Autowired
         private FileDBUsuariosRepository repository;
@@ -49,6 +55,30 @@
                 message = "Could not upload the file: " + file.getOriginalFilename() + "!";
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new com.example.fileupload.ResponseMessage(message));
             }
+        }
+
+        @PostMapping("/message")
+        public ResponseEntity<ResponseMessage> storeMessage(@RequestParam("message") String message) {
+            String ResponseMs = "";
+            try {
+                MessageDB Ms = new MessageDB("Pedro", message, new Date().toString());
+                Messagerepository.save(Ms);
+
+                ResponseMs = "Message store successfully at: " + Ms.getFechaHora();
+                return ResponseEntity.status(HttpStatus.OK).body(new com.example.fileupload.ResponseMessage(ResponseMs));
+            } catch (Exception e) {
+                ResponseMs = "Could not store the message: ";
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new com.example.fileupload.ResponseMessage(ResponseMs));
+            }
+        }
+
+        @GetMapping("/message")
+        public ResponseEntity<String> getMessage() {
+            List<MessageDB> messages = Messagerepository.findAll();
+
+            String jsonStr = JSONArray.toJSONString(messages);
+
+            return ResponseEntity.status(HttpStatus.OK).body(jsonStr);
         }
 
         @GetMapping("/files")
@@ -90,13 +120,22 @@
             return CollectionModel.of(usuarios, linkTo(methodOn(FileController.class).all()).withSelfRel());
         }
 
+        private static final Logger log = LoggerFactory.getLogger(FileController.class);
+
         @PostMapping("/Usuarios")
         ResponseEntity<ResponseMessage> newUser(@RequestBody String newUser) {
             String message = "";
+            List<FileDbUsuarios> User;
             try {
-                repository.save(new FileDbUsuarios(newUser.substring(5), "Cualquiera", "Contraseña", "Cola"));
-                message = "User sing in successfully: " + newUser;
-                return ResponseEntity.status(HttpStatus.OK).body(new com.example.fileupload.ResponseMessage(message));
+                User = repository.findByName(newUser);
+                if(User.isEmpty()) {
+                    repository.save(new FileDbUsuarios(newUser.substring(5), "Cualquiera", "Contraseña", "Cola"));
+                    message = "User sing in successfully: " + newUser;
+                    return ResponseEntity.status(HttpStatus.OK).body(new com.example.fileupload.ResponseMessage(message));
+                }
+                else {
+                    message = "User already in the DB: ";
+                    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new com.example.fileupload.ResponseMessage(message));}
             } catch (Exception e) {
                 message = "Could not sign in: " + newUser;
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new com.example.fileupload.ResponseMessage(message));
@@ -155,9 +194,8 @@
         @PostMapping("/Grupos")
         ResponseEntity<ResponseMessage> newGroup(@RequestBody String newGroup) {
             String message = "";
-            ArrayList<FileDbUsuarios> ListaMiembros = null;
             try {
-                repositoryGrupo.save(new FileDBGrupo(newGroup.substring(5), "Lista", "Exchange", ListaMiembros));
+                repositoryGrupo.save(new FileDBGrupo(newGroup.substring(5), "Lista", "Exchange", "Miembros"));
                 return ResponseEntity.status(HttpStatus.OK).body(new com.example.fileupload.ResponseMessage(message));
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));

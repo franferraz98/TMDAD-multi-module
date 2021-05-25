@@ -1,6 +1,7 @@
 package com.example.multimodule.application;
 
 
+import com.example.fileupload.*;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +25,12 @@ public class Receiver {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private List<String> allQueueNames;
+
+    @Autowired
+    private FileDBUsuariosRepository Userrepository;
+
+    @Autowired
+    private FileDBGrupoRepository Grouprepository;
 
     @Autowired
     private TopicExchange exchange;
@@ -53,6 +61,27 @@ public class Receiver {
         }
     }
 
+    boolean AddUserGroups(String name, String newGroup)
+    {
+        final FileDbUsuarios[] b = new FileDbUsuarios[1];
+        b[0] = Userrepository.findByName(name).get(0);
+        b[0].addGroup(newGroup);
+        Userrepository.deleteByName(name);
+        Userrepository.save(b[0]);
+
+        return true;
+    }
+
+    boolean removeUserGroups(String name, String deleteGroup)
+    {
+        final FileDbUsuarios[] b = new FileDbUsuarios[1];
+        b[0] = Userrepository.findByName(name).get(0);
+        b[0].removeGroup(deleteGroup);
+        Userrepository.deleteByName(name);
+        Userrepository.save(b[0]);
+        return true;
+    }
+
     @MessageMapping("/addToRoom")
     public void addToRoom (final JsonMessage jsonMessage){
         String text = jsonMessage.getText();
@@ -61,18 +90,24 @@ public class Receiver {
         String room = parts[0];
         String user = parts[1];
 
-        Queue queue = new Queue(user, true);
-        FanoutExchange exchange = new FanoutExchange(room);
-        Binding binding = BindingBuilder.bind(queue).to(exchange);
+        if(Userrepository.findByNameAndGrupoIn(user, Collections.singleton(room)).isEmpty())
+        {
+            Queue queue = new Queue(user, true);
+            FanoutExchange exchange = new FanoutExchange(room);
+            Binding binding = BindingBuilder.bind(queue).to(exchange);
 
-        rabbitAdmin.declareBinding(binding);
+            rabbitAdmin.declareBinding(binding);
+
+            AddUserGroups(user, room);
+        }
+        else System.out.println("Usuario ya en el grupo");
     }
 
     @MessageMapping("/createRoom")
     public void createChatRoom (final JsonMessage jsonMessage){
         String queueName = jsonMessage.getFrom();
         String exchangeName = jsonMessage.getText();
-
+        if(Grouprepository.findByName(queueName).isEmpty()){;}
         rabbitAdmin.deleteExchange(exchangeName);
         FanoutExchange exchange = new FanoutExchange(exchangeName);
         Queue queue = new Queue(queueName, true);

@@ -1,7 +1,9 @@
 package com.example.fileupload;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "Usuarios")
@@ -12,7 +14,9 @@ public class FileDbUsuarios {
 
         private String name;
 
-        private String Grupo;
+
+        @ElementCollection(fetch = FetchType.EAGER)
+        private Set<String> grupo = new HashSet<String>();
 
         private String Contraseña;
 
@@ -21,9 +25,9 @@ public class FileDbUsuarios {
         public FileDbUsuarios() {
         }
 
-        public FileDbUsuarios(String name, String Grupo, String Contraseña, String Cola) {
+        public FileDbUsuarios(String name, String newGrupo, String Contraseña, String Cola) {
             this.name = name;
-            this.Grupo = Grupo;
+            this.grupo.add(newGrupo);
             this.Contraseña = Contraseña;
             this.Cola= Cola;
         }
@@ -44,12 +48,12 @@ public class FileDbUsuarios {
             this.name = name;
         }
 
-        public String getGrupo() {
-            return Grupo;
+        public Set<String> getGrupo() {
+            return grupo;
         }
 
-        public void setGrupo(String Grupo) {
-            this.Grupo = Grupo;
+        public void setGrupo(Set<String> Grupo) {
+            this.grupo = Grupo;
         }
     @Override
     public boolean equals(Object o) {
@@ -60,17 +64,17 @@ public class FileDbUsuarios {
             return false;
         FileDbUsuarios fileDbUsuarios = (FileDbUsuarios) o;
         return Objects.equals(this.id, fileDbUsuarios.id) && Objects.equals(this.name, fileDbUsuarios.name)
-                && Objects.equals(this.Grupo, fileDbUsuarios.Grupo);
+                && Objects.equals(this.grupo, fileDbUsuarios.grupo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.name, this.Grupo);
+        return Objects.hash(this.id, this.name, this.grupo);
     }
 
     @Override
     public String toString() {
-        return "Usuario{" + "id=" + this.id + ", name='" + this.name + '\'' + ", Grupo='" + this.Grupo + '\'' + '}';
+        return "Usuario{" + "id=" + this.id + ", name='" + this.name + '\'' + ", Grupo='" + this.grupo + '\'' + '}';
     }
 
     public String getContraseña() {
@@ -88,6 +92,11 @@ public class FileDbUsuarios {
     public void setCola(String cola) {
         this.Cola = cola;
     }
+
+    public void addGroup(String newGrupo){
+        this.grupo.add(newGrupo);
+    }
+    public void removeGroup(String deleteGrupo){ this.grupo.remove(deleteGrupo) ;}
 }
 
 
