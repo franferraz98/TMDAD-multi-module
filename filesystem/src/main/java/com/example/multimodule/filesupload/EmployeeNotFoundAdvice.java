@@ -1,4 +1,4 @@
-package com.example.fileupload;
+package com.example.multimodule.filesupload;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 class EmployeeNotFoundAdvice {
 
     @ResponseBody
-    @ExceptionHandler(com.example.fileupload.EmployeeNotFoundException.class)
+    @ExceptionHandler(EmployeeNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String employeeNotFoundHandler(com.example.fileupload.EmployeeNotFoundException ex) {
+    String employeeNotFoundHandler(EmployeeNotFoundException ex) {
         return ex.getMessage();
     }
 }

@@ -1,4 +1,4 @@
-package com.example.fileupload;
+package com.example.multimodule.filesupload;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

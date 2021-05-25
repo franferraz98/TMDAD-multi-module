@@ -1,4 +1,4 @@
-package com.example.fileupload;
+package com.example.multimodule.filesupload;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Persistent;
@@ -32,20 +32,20 @@ public class FileStorageService {
 
     @Autowired
     @Persistent
-    private com.example.fileupload.FileDBUsuariosRepository fileDBusuariosRepository;
+    private FileDBUsuariosRepository fileDBusuariosRepository;
 
-    public com.example.fileupload.FileDbUsuarios storeUsers(String User) throws IOException {
+    public FileDbUsuarios storeUsers(String User) throws IOException {
         String userName = StringUtils.cleanPath(User);
-        com.example.fileupload.FileDbUsuarios FileDbUsuarios = new com.example.fileupload.FileDbUsuarios(userName, "Cualquiera", "Contraseña", "Cola");
+        FileDbUsuarios FileDbUsuarios = new FileDbUsuarios(userName, "Cualquiera", "Contraseña", "Cola");
 
         return fileDBusuariosRepository.save(FileDbUsuarios);
     }
 
-    public com.example.fileupload.FileDbUsuarios getUsers(Long id) {
+    public FileDbUsuarios getUsers(Long id) {
         return fileDBusuariosRepository.findById(id).get();
     }
 
-    public Stream<com.example.fileupload.FileDbUsuarios> getAllUsers() {
+    public Stream<FileDbUsuarios> getAllUsers() {
         return fileDBusuariosRepository.findAll().stream();
     }
 }

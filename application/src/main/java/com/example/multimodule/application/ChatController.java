@@ -1,9 +1,11 @@
 package com.example.multimodule.application;
 
+import com.example.multimodule.filesupload.MessageDB;
+import com.example.multimodule.filesupload.MessageDBRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import com.example.fileupload.*;
+import com.example.multimodule.filesupload.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,7 +1,7 @@
 package com.example.multimodule.application;
 
 
-import com.example.fileupload.*;
+import com.example.multimodule.filesupload.*;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

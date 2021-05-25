@@ -1,4 +1,4 @@
-package com.example.fileupload;
+package com.example.multimodule.filesupload;
 
 class EmployeeNotFoundException extends RuntimeException {
 
