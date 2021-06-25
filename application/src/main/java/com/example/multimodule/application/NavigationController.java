@@ -39,7 +39,7 @@ public class NavigationController {
 
         System.out.println("USERNAME: " + username);
 
-        model.addAttribute("activePage", "info");
+        model.addAttribute("activePage", "groups");
         GroupSimulator g1 = new GroupSimulator("Grupo1","http://localhost:8080/group/1");
         GroupSimulator g2 = new GroupSimulator("Grupo2","http://localhost:8080/group/2");
         GroupSimulator g3 = new GroupSimulator("Grupo3","http://localhost:8080/group/3");
@@ -57,6 +57,24 @@ public class NavigationController {
         System.out.println("FROM: " + from);
         model.addAttribute("from", from);
         return "group";
+    }
+
+    @GetMapping("/database")
+    public String getDatabase(Model model) {
+        model.addAttribute("activePage", "database");
+        return "databaseFile";
+    }
+
+    @GetMapping("/signup")
+    public String getSignup(Model model) {
+        model.addAttribute("activePage", "signup");
+        return "signup";
+    }
+
+    @GetMapping("/login")
+    public String getLogin(Model model) {
+        model.addAttribute("activePage", "login");
+        return "login";
     }
 
     @GetMapping("/admin")

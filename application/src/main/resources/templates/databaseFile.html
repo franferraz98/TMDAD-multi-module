@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Application</title>
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link th:href="@{styles/main.css}" rel="stylesheet"/>
+
+  <script src="js/sockjs.js"></script>
+  <script src="js/stomp.js"></script>
+  <script src="js/appNew.js"></script>
+  <script src="js/database.js"></script>
+
+</head>
+
+<body class="d-flex flex-column h-100" onload="instantConnect()">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<br />
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+  enabled. Please enable
+  Javascript and reload this page!</h2></noscript>
+<div>
+
+  <br />
+
+  <div>
+    <form method="POST" enctype="multipart/form-data" action="/upload">
+      <table>
+        <tr>
+          <td>File to upload:</td><td><input type="file" name="file" /></td>
+          <td><input type="submit" value="Upload" /></td>
+        </tr>
+      </table>
+    </form>
+  </div>
+
+  <br />
+
+  <div>
+    <form method="GET"  action="/files">
+      <table>
+        <tr>
+          <td>Repository to check:</td><td><input type="text" name="file" /></td>
+          <td><input type="submit" value="Content List" /></td>
+        </tr>
+      </table>
+    </form>
+  </div>
+
+  <br />
+
+  <div>
+    <form onsubmit="return false">
+      <table>
+        <tr>
+          <li>
+            <label for="fileId">File to look for (by ID):</label>
+            <input type="text" id="fileId" name="file_id" />
+            <input type="button" onclick="searchFile()" value="Search File"/>
+          </li>
+          <p id="File"></p>
+        </tr>
+      </table>
+    </form>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous">
+</script>
+<script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js">
+</script>
+</body>
+</html>
