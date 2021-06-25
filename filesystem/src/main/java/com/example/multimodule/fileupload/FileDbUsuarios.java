@@ -70,7 +70,8 @@ public class FileDbUsuarios {
 
     @Override
     public String toString() {
-        return "Usuario{" + "id=" + this.id + ", name='" + this.name + '\'' + ", Grupo='" + this.Grupo + '\'' + '}';
+        return "{" + "\"id\":\"" + this.id + "\", \"name\":\"" + this.name + "\"" + ", \"Grupo\":\"" +
+                this.Grupo + "\"" + "}";
     }
 
     public String getContraseña() {

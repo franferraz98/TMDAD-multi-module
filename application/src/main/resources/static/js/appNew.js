@@ -5,6 +5,14 @@ var stompClientAdmin = null;
 
 var username = null;
 
+function wait(ms){
+   var start = new Date().getTime();
+   var end = start;
+   while(end < start + ms) {
+     end = new Date().getTime();
+  }
+}
+
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
@@ -154,6 +162,29 @@ function sendToRoom() {
     text = text.concat(':::');
     text = text.concat(dest);
     stompClient.send("/app/chatRoom", {}, JSON.stringify({'from':from, 'text':text}));
+}
+
+function showMyGroups(){
+
+    var req = new XMLHttpRequest();
+    req.open('GET', 'http://localhost:8080/Usuarios/get/' + username, false);
+    req.send(null);
+    console.log(req.status);
+    if (req.status == 200)
+      console.log(req.responseText);
+
+    var jsn = JSON.parse(req.responseText);
+    var groupName = jsn.Grupo
+
+    // TODO: Recuperar grupo mediante el nombre y conseguir la URL
+
+    /*
+    var groups = document.getElementById('groups');
+    var p = document.createElement('p');
+    p.style.wordWrap = 'break-word';
+    p.appendChild(document.createTextNode(messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")"));
+    response.appendChild(p);
+    */
 }
 
 function showMessageOutput(messageOutput) {

@@ -6,6 +6,7 @@
     import org.springframework.hateoas.IanaLinkRelations;
     import org.springframework.http.HttpHeaders;
     import org.springframework.http.HttpStatus;
+    import org.springframework.http.MediaType;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
     import org.springframework.web.multipart.MultipartFile;
@@ -101,6 +102,15 @@
                 message = "Could not sign in: " + newUser;
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
             }
+        }
+
+        @RequestMapping(value = "/Usuarios/get/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+        public @ResponseBody String getUsuario(@PathVariable("name") String name) {
+            // System.out.println(name);
+            List<FileDbUsuarios> Usuario = repository.findByName(name);
+            System.out.println(Usuario.get(0));
+
+            return Usuario.get(0).toString();
         }
 
         @GetMapping("/Usuarios/{id}")
