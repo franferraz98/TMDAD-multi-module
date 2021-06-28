@@ -13,6 +13,10 @@
 
 </head>
 
+<body onload="instantConnect()">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
 <div>
   <form style="border:1px solid #ccc">
     <div class="container">
@@ -32,7 +36,8 @@
 
       <div class="clearfix">
         <button type="button" class="cancelbtn">Cancel</button>
-        <button type="submit" class="loginpbtn">Log In</button>
+        <button type="submit" class="loginpbtn" onclick="connect()">Log In</button>
+        <button type="submit" class="logoutpbtn" onclick="disconnect()">Log Out</button>
       </div>
     </div>
   </form>

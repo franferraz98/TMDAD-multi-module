@@ -26,10 +26,26 @@ function setConnected(connected) {
 }
 
 function connect() {
-    // Connect to main chat
-    connectToMain();
-    // Connect to room creator
-    connectToRoomCreator();
+
+    // Check user & password
+    var username = document.getElementById('username').value;
+    var psw = document.getElementById('psw').value;
+    var msg = username;
+    msg = msg.concat("&");
+    msg = msg.concat(psw);
+    console.log(msg);
+    var req = new XMLHttpRequest();
+    req.open('POST', 'http://localhost:8080/Usuarios/login', false);
+    req.send(msg);
+    if (req.status == 200) {
+      console.log(req.status);
+      // Connect to main chat
+      connectToMain();
+      // Connect to room creator
+      connectToRoomCreator();
+    } else {
+        console.log(req.responseText);
+    }
 }
 
 function instantConnectGroup() {
@@ -71,17 +87,18 @@ function instantConnect() {
 
 function connectToMain() {
     var aux = sessionStorage.getItem("username");
+    console.log(aux)
     var socket = new SockJS('/route');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected to main: ' + frame);
         if (aux){
-            console.log("SE GUARDA SUUUUU");
             console.log(aux);
             username = aux;
         } else {
             username = document.getElementById('username').value;
+            console.log(username)
             sessionStorage.setItem("username", username);
         }
         var topic = '/topic/';
@@ -194,7 +211,7 @@ function showMessageOutput(messageOutput) {
     p.appendChild(document.createTextNode(messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")"));
     response.appendChild(p);
 }
-
+/*
 $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
@@ -203,3 +220,4 @@ $(function () {
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendMessage(); });
 });
+*/

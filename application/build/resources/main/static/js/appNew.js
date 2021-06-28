@@ -26,10 +26,26 @@ function setConnected(connected) {
 }
 
 function connect() {
-    // Connect to main chat
-    connectToMain();
-    // Connect to room creator
-    connectToRoomCreator();
+
+    // Check user & password
+    var username = document.getElementById('username').value;
+    var psw = document.getElementById('psw').value;
+    var msg = username;
+    msg = msg.concat("&");
+    msg = msg.concat(psw);
+    console.log(msg);
+    var req = new XMLHttpRequest();
+    req.open('POST', 'http://localhost:8080/Usuarios/login', false);
+    req.send(msg);
+    if (req.status == 200) {
+      console.log(req.status);
+      // Connect to main chat
+      connectToMain();
+      // Connect to room creator
+      connectToRoomCreator();
+    } else {
+        console.log(req.responseText);
+    }
 }
 
 function instantConnectGroup() {
@@ -71,17 +87,18 @@ function instantConnect() {
 
 function connectToMain() {
     var aux = sessionStorage.getItem("username");
+    console.log(aux)
     var socket = new SockJS('/route');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected to main: ' + frame);
         if (aux){
-            console.log("SE GUARDA SUUUUU");
             console.log(aux);
             username = aux;
         } else {
             username = document.getElementById('username').value;
+            console.log(username)
             sessionStorage.setItem("username", username);
         }
         var topic = '/topic/';
@@ -166,16 +183,17 @@ function sendToRoom() {
 
 function showMyGroups(){
 
-    var req2 = new XMLHttpRequest();
-    req2.open('GET', 'http://localhost:8080/Usuarios/get/' + username, false);
-    req2.send(null);
-    console.log(req2.status);
-    if (req2.status == 200)
-      console.log(req2.responseText);
+    var req = new XMLHttpRequest();
+    req.open('GET', 'http://localhost:8080/Usuarios/get/' + username, false);
+    req.send(null);
+    console.log(req.status);
+    if (req.status == 200)
+      console.log(req.responseText);
 
-    var jsn = JSON.parse(req2.responseText);
-    console.log(jsn.Grupo);
+    var jsn = JSON.parse(req.responseText);
+    var groupName = jsn.Grupo
 
+    // TODO: Recuperar grupo mediante el nombre y conseguir la URL
 
     /*
     var groups = document.getElementById('groups');
@@ -193,7 +211,7 @@ function showMessageOutput(messageOutput) {
     p.appendChild(document.createTextNode(messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")"));
     response.appendChild(p);
 }
-
+/*
 $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
@@ -202,3 +220,4 @@ $(function () {
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendMessage(); });
 });
+*/

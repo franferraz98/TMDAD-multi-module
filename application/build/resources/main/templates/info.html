@@ -6,8 +6,13 @@
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{styles/main.css}" rel="stylesheet"/>
+
+    <script src="js/sockjs.js"></script>
+    <script src="js/stomp.js"></script>
+    <script src="js/appNew.js"></script>
+
 </head>
-<body class="d-flex flex-column h-100">
+<body class="d-flex flex-column h-100" onload="instantConnect()">
 
 <div th:replace="~{fragments/header :: header}"></div>
 
@@ -28,6 +33,10 @@
     </tr>
     </tbody>
 </table>
+
+<div>
+    <button id="getGroups" onclick="showMyGroups();">Show Groups</button>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="

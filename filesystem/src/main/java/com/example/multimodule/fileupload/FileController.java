@@ -91,13 +91,52 @@
             return CollectionModel.of(usuarios, linkTo(methodOn(FileController.class).all()).withSelfRel());
         }
 
-        @PostMapping("/Usuarios")
-        ResponseEntity<ResponseMessage> newUser(@RequestBody String newUser) {
+        @PostMapping("/Usuarios/login")
+        ResponseEntity<ResponseMessage> login(@RequestBody String body) {
+            String parts[] = body.split("&");
+            String newUser = parts[0];
+            String contrasena = parts[1];
+            // System.out.println(body);
+            // System.out.println(contrasena.toString());
             String message = "";
             try {
-                repository.save(new FileDbUsuarios(newUser.substring(5), "Cualquiera", "Contraseña", "Cola"));
-                message = "User sing in successfully: " + newUser;
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+                List<FileDbUsuarios> lista = repository.findByName(newUser);
+                if (!lista.isEmpty()) {
+                    if (lista.get(0).getContraseña().equals(contrasena)) {
+                        message = "Password correct";
+                        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+                    } else {
+                        message = "Password not correct";
+                        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ResponseMessage(message));
+                    }
+                } else {
+                    message = newUser + "doesn't exist";
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessage(message));
+                }
+            } catch (Exception e) {
+                message = "Could not sign in: " + newUser;
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+            }
+        }
+
+
+
+
+        @PostMapping("/Usuarios")
+        ResponseEntity<ResponseMessage> newUser(@RequestBody String body) {
+            String parts[] = body.split("&");
+            String newUser = parts[0];
+            String contrasena = parts[1];
+            String message = "";
+            try {
+                if (repository.findByName(newUser).isEmpty()) {
+                    repository.save(new FileDbUsuarios(newUser, "", contrasena, newUser));
+                    message = "User sing in successfully: " + newUser;
+                    return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+                } else {
+                    message = newUser + "does already exist";
+                    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+                }
             } catch (Exception e) {
                 message = "Could not sign in: " + newUser;
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
@@ -112,6 +151,8 @@
 
             return Usuario.get(0).toString();
         }
+
+
 
         @GetMapping("/Usuarios/{id}")
         EntityModel<FileDbUsuarios> one(@PathVariable("id") Long id) {

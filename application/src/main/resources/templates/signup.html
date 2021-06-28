@@ -10,8 +10,11 @@
   <script src="js/sockjs.js"></script>
   <script src="js/stomp.js"></script>
   <script src="js/appNew.js"></script>
+  <script src="js/signup.js"></script>
 
 </head>
+
+<div th:replace="~{fragments/header :: header}"></div>
 
 <div>
 <form style="border:1px solid #ccc">
@@ -37,7 +40,7 @@
 
     <div class="clearfix">
       <button type="button" class="cancelbtn">Cancel</button>
-      <button type="submit" class="signupbtn">Sign Up</button>
+      <button type="submit" class="signupbtn" onclick="signup()">Sign Up</button>
     </div>
   </div>
 </form>
