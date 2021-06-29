@@ -25,8 +25,15 @@ function setConnected(connected) {
     $("#greetings").html("");
 }
 
-function connect() {
+function connectOld() {
+    // Connect to main chat
+    connectToMain();
+    // Connect to room creator
+    // connectToRoomCreator();
 
+}
+
+function connect() {
     // Check user & password
     var username = document.getElementById('username').value;
     var psw = document.getElementById('psw').value;
@@ -35,17 +42,18 @@ function connect() {
     msg = msg.concat(psw);
     console.log(msg);
     var req = new XMLHttpRequest();
-    req.open('POST', 'http://localhost:8080/Usuarios/login', false);
+    req.open('POST', 'http://localhost:8080/Usuarios/login', true); //TODO: Comprobar URI
+    req.onreadystatechange = function (aEvt) {
+      if (req.readyState == 4) {
+         if(req.status == 200) {
+          console.log(req.status);
+          connectOld();
+         } else {
+               console.log(req.responseText);
+           }
+      }
+    };
     req.send(msg);
-    if (req.status == 200) {
-      console.log(req.status);
-      // Connect to main chat
-      connectToMain();
-      // Connect to room creator
-      connectToRoomCreator();
-    } else {
-        console.log(req.responseText);
-    }
 }
 
 function instantConnectGroup() {

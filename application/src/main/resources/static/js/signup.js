@@ -13,7 +13,7 @@ function signup() {
         req.send(msg);
         if (req.status == 200) {
             console.log("USUARIO CREADO");
-            window.location.replace("localhost:8080/login");
+            // window.location.replace("localhost:8080/login");
         } else {
             // TODO: Presentar excepcion
         }

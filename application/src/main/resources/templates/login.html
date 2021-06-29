@@ -7,8 +7,9 @@
         href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
   <link th:href="@{styles/main.css}" rel="stylesheet"/>
 
-  <script src="js/sockjs.js"></script>
-  <script src="js/stomp.js"></script>
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+  <script src="/webjars/stomp-websocket/stomp.min.js"></script>
   <script src="js/appNew.js"></script>
 
 </head>
@@ -36,8 +37,8 @@
 
       <div class="clearfix">
         <button type="button" class="cancelbtn">Cancel</button>
-        <button type="submit" class="loginpbtn" onclick="connect()">Log In</button>
-        <button type="submit" class="logoutpbtn" onclick="disconnect()">Log Out</button>
+        <button type="submit" class="loginpbtn" onclick="connect();">Log In</button>
+        <button type="submit" class="logoutpbtn" onclick="disconnect();">Log Out</button>
       </div>
     </div>
   </form>

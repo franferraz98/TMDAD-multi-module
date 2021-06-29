@@ -7,8 +7,10 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{styles/main.css}" rel="stylesheet"/>
 
-    <script src="js/sockjs.js"></script>
-    <script src="js/stomp.js"></script>
+
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
     <script src="js/appNew.js"></script>
 
 </head>
@@ -35,7 +37,7 @@
     <div>
         <input type="text" id="from" th:name="from" name="from" placeholder="Choose a nickname"/>
         <input type="text" id="username" th:name="username" name="username" placeholder="Write your username..."/>
-        <button id="connect" onclick="connect();">Connect</button>
+        <button id="connect" onclick="connectOld();">Connect</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
         <!--button id="subscribe" disabled="disabled" onclick="subscribe();">Subscribe</button-->
     </div>
