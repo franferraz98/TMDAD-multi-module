@@ -13,7 +13,7 @@ public class FileDBGrupo {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    private String Grupo;
+    private String name;
 
     private String ListaColas;
 
@@ -24,8 +24,8 @@ public class FileDBGrupo {
     public FileDBGrupo() {
     }
 
-    public FileDBGrupo(String Grupo, String listaColas, String exchage, ArrayList<FileDbUsuarios> ListaUsuarios) {
-        this.Grupo = Grupo;
+    public FileDBGrupo(String name, String listaColas, String exchage, ArrayList<FileDbUsuarios> ListaUsuarios) {
+        this.name = name;
         this.ListaColas = listaColas;
         this.Exchage= exchage;
         this.Pertenece = ListaUsuarios;
@@ -39,12 +39,12 @@ public class FileDBGrupo {
         this.id = id;
     }
 
-    public String getGrupo() {
-        return Grupo;
+    public String getName() {
+        return name;
     }
 
-    public void setGrupo(String Grupo) {
-        this.Grupo = Grupo;
+    public void setName(String Grupo) {
+        this.name = Grupo;
     }
     @Override
     public boolean equals(Object o) {
@@ -59,12 +59,12 @@ public class FileDBGrupo {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.Grupo);
+        return Objects.hash(this.id, this.name);
     }
 
     @Override
     public String toString() {
-        return "Usuario{" + "id=" + this.id + ", name='" + this.Grupo + '\'' + ", Grupo='" + this.Grupo + '\'' + '}';
+        return "Usuario{" + "id=" + this.id + ", name='" + this.name + '\'' + ", Grupo='" + this.name + '\'' + '}';
     }
 
 

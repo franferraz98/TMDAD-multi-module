@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Application</title>
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link th:href="@{styles/main.css}" rel="stylesheet"/>
+
+  <script src="/webjars/jquery/jquery.min.js"></script>
+  <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+  <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+  <script src="js/appNew.js"></script>
+
+</head>
+
+<body onload="instantConnect()">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div>
+  <form style="border:1px solid #ccc">
+    <div class="container">
+      <h1>Log In</h1>
+      <p>Please fill in this form to Log In.</p>
+      <hr>
+
+      <label><b>Username</b></label>
+      <input id="username" type="text" placeholder="Enter Username" name="username" required>
+
+      <label><b>Password</b></label>
+      <input id="psw" type="password" placeholder="Enter Password" name="psw" required>
+
+      <label>
+        <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
+      </label>
+
+      <div class="clearfix">
+        <button type="button" class="cancelbtn">Cancel</button>
+        <button type="submit" class="loginpbtn" onclick="connect();">Log In</button>
+        <button type="submit" class="logoutpbtn" onclick="disconnect();">Log Out</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

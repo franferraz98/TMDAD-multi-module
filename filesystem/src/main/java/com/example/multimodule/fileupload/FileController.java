@@ -217,12 +217,26 @@
         }
 
         @PostMapping("/Grupos")
-        ResponseEntity<ResponseMessage> newGroup(@RequestBody String newGroup) {
+        ResponseEntity<ResponseMessage> newGroup(@RequestBody String body) {
+            String parts[] = body.split("&");
+            String username = parts[0];
+            String groupName = parts[1];
+
             String message = "";
             ArrayList<FileDbUsuarios> ListaMiembros = null;
             try {
-                repositoryGrupo.save(new FileDBGrupo(newGroup.substring(5), "Lista", "Exchange", ListaMiembros));
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+                if (!repository.findByName(username).isEmpty()) {
+                    if(repositoryGrupo.findByName(groupName).isEmpty()){
+                        repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName, ListaMiembros));
+                        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+                    } else {
+                        message = "Group " + groupName + "does already exist";
+                        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+                    }
+                } else {
+                    message = "User " + username + "does not exist";
+                    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+                }
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
             }

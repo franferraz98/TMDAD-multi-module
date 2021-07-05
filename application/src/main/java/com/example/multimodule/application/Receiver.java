@@ -77,6 +77,7 @@ public class Receiver {
         String queueName = jsonMessage.getFrom();
         String exchangeName = jsonMessage.getText();
 
+        /*
         boolean b = fileController.newGroupInternal(exchangeName);
 
         if(b){
@@ -84,6 +85,7 @@ public class Receiver {
         } else {
             System.out.println("ERROR AL ALMACENAR");
         }
+        */
 
         rabbitAdmin.deleteExchange(exchangeName);
         FanoutExchange exchange = new FanoutExchange(exchangeName);
