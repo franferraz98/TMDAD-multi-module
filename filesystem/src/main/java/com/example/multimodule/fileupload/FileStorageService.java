@@ -36,7 +36,7 @@ public class FileStorageService {
 
     public FileDbUsuarios storeUsers(String User) throws IOException {
         String userName = StringUtils.cleanPath(User);
-        FileDbUsuarios FileDbUsuarios = new FileDbUsuarios(userName, "Cualquiera", "Contraseña", "Cola");
+        FileDbUsuarios FileDbUsuarios = new FileDbUsuarios(userName, "Contraseña", "Cola");
 
         return fileDBusuariosRepository.save(FileDbUsuarios);
     }

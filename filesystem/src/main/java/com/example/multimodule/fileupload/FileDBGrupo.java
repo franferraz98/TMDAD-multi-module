@@ -1,12 +1,10 @@
 package com.example.multimodule.fileupload;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-@Entity
-@Table(name = "Grupos")
+@Entity(name = "Grupos")
+@Table(name = "grupos")
 public class FileDBGrupo {
 
     @Id
@@ -19,16 +17,17 @@ public class FileDBGrupo {
 
     private String Exchage;
 
-    private ArrayList<FileDbUsuarios> Pertenece;
+    @ManyToMany(mappedBy = "gruposSet")
+    private Set<FileDbUsuarios> Pertenece = new HashSet<>();
+
 
     public FileDBGrupo() {
     }
 
-    public FileDBGrupo(String name, String listaColas, String exchage, ArrayList<FileDbUsuarios> ListaUsuarios) {
+    public FileDBGrupo(String name, String listaColas, String exchage) {
         this.name = name;
         this.ListaColas = listaColas;
         this.Exchage= exchage;
-        this.Pertenece = ListaUsuarios;
     }
 
     public Long getId() {
@@ -84,13 +83,6 @@ public class FileDBGrupo {
         Exchage = exchage;
     }
 
-    public List<FileDbUsuarios> getPertenece() {
-        return Pertenece;
-    }
-
-    public void setPertenece(ArrayList<FileDbUsuarios> pertenece) {
-        Pertenece = pertenece;
-    }
     public void addMember(FileDbUsuarios miembro){
         Pertenece.add(miembro);
     }

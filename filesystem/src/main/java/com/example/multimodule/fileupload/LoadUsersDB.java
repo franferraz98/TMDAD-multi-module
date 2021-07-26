@@ -15,9 +15,9 @@ class LoadUsersDB {
     CommandLineRunner initDatabase(FileDBUsuariosRepository repository) {
 
         return args -> {
-            log.info("Preloading " + repository.save(new FileDbUsuarios("BilboBaggins", "burglar",
+            log.info("Preloading " + repository.save(new FileDbUsuarios("BilboBaggins",
                     "Contraseña", "BilboBaggins")));
-            log.info("Preloading " + repository.save(new FileDbUsuarios("FrodoBaggins", "thief",
+            log.info("Preloading " + repository.save(new FileDbUsuarios("FrodoBaggins",
                     "Contraseña", "FrodoBaggins")));
         };
     }

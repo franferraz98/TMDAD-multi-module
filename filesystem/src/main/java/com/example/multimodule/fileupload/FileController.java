@@ -130,7 +130,7 @@
             String message = "";
             try {
                 if (repository.findByName(newUser).isEmpty()) {
-                    repository.save(new FileDbUsuarios(newUser, "", contrasena, newUser));
+                    repository.save(new FileDbUsuarios(newUser, contrasena, newUser));
                     message = "User sing in successfully: " + newUser;
                     return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
                 } else {
@@ -170,7 +170,6 @@
             FileDbUsuarios updatedUsuario = repository.findById(id) //
                     .map(employee -> {
                         employee.setName(Usuario.getName());
-                        employee.setGrupo(Usuario.getGrupo());
                         return repository.save(employee);
                     }) //
                     .orElseGet(() -> {
@@ -208,7 +207,7 @@
             String message = "";
             ArrayList<FileDbUsuarios> ListaMiembros = null;
             try {
-                repositoryGrupo.save(new FileDBGrupo(newGroup, "Lista", "Exchange", ListaMiembros));
+                repositoryGrupo.save(new FileDBGrupo(newGroup, "Lista", "Exchange"));
                 return true;
             } catch (Exception e) {
                 System.out.println("ERROR AL AÑADIR EL GRUPO: " + e.toString());
@@ -227,7 +226,7 @@
             try {
                 if (!repository.findByName(username).isEmpty()) {
                     if(repositoryGrupo.findByName(groupName).isEmpty()){
-                        repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName, ListaMiembros));
+                        repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName));
                         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
                     } else {
                         message = "Group " + groupName + "does already exist";

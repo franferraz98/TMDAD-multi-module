@@ -1,10 +1,12 @@
 package com.example.multimodule.fileupload;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
-@Entity
-@Table(name = "Usuarios")
+@Entity(name = "Usuarios")
+@Table(name = "usuarios")
 public class FileDbUsuarios {
         @Id
         @GeneratedValue(strategy= GenerationType.AUTO)
@@ -12,7 +14,15 @@ public class FileDbUsuarios {
 
         private String name;
 
-        private String Grupo;
+        @ManyToMany(cascade = {
+                CascadeType.PERSIST,
+                CascadeType.MERGE
+        })
+        @JoinTable(name = "usuarios_grupos",
+                joinColumns = @JoinColumn(name = "usuarios_id"),
+                inverseJoinColumns = @JoinColumn(name = "grupos_id")
+        )
+        private Set<FileDBGrupo> gruposSet = new HashSet<>();
 
         private String Contraseña;
 
@@ -21,9 +31,8 @@ public class FileDbUsuarios {
         public FileDbUsuarios() {
         }
 
-        public FileDbUsuarios(String name, String Grupo, String Contraseña, String Cola) {
+        public FileDbUsuarios(String name, String Contraseña, String Cola) {
             this.name = name;
-            this.Grupo = Grupo;
             this.Contraseña = Contraseña;
             this.Cola= Cola;
         }
@@ -44,13 +53,6 @@ public class FileDbUsuarios {
             this.name = name;
         }
 
-        public String getGrupo() {
-            return Grupo;
-        }
-
-        public void setGrupo(String Grupo) {
-            this.Grupo = Grupo;
-        }
     @Override
     public boolean equals(Object o) {
 
@@ -60,18 +62,17 @@ public class FileDbUsuarios {
             return false;
         FileDbUsuarios fileDbUsuarios = (FileDbUsuarios) o;
         return Objects.equals(this.id, fileDbUsuarios.id) && Objects.equals(this.name, fileDbUsuarios.name)
-                && Objects.equals(this.Grupo, fileDbUsuarios.Grupo);
+               ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.name, this.Grupo);
+        return Objects.hash(this.id, this.name);
     }
 
     @Override
     public String toString() {
-        return "{" + "\"id\":\"" + this.id + "\", \"name\":\"" + this.name + "\"" + ", \"Grupo\":\"" +
-                this.Grupo + "\"" + "}";
+        return "{" + "\"id\":\"" + this.id + "\", \"name\":\"" + this.name + "\"" + ", \"Grupo\":\"" + "\"" + "}";
     }
 
     public String getContraseña() {
