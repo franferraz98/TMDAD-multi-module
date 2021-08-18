@@ -14,7 +14,11 @@ public class FileDbUsuarios {
 
         private String name;
 
-        @ManyToMany(cascade = {
+    public Set<FileDBGrupo> getGruposSet() {
+        return gruposSet;
+    }
+
+    @ManyToMany(cascade = {
                 CascadeType.PERSIST,
                 CascadeType.MERGE
         })

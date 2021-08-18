@@ -17,6 +17,10 @@ public class FileDBGrupo {
 
     private String Exchage;
 
+    public Set<FileDbUsuarios> getPertenece() {
+        return Pertenece;
+    }
+
     @ManyToMany(mappedBy = "gruposSet")
     private Set<FileDbUsuarios> Pertenece = new HashSet<>();
 
