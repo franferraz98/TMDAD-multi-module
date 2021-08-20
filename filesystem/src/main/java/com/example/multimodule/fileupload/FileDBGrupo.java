@@ -1,5 +1,7 @@
 package com.example.multimodule.fileupload;
 
+import org.springframework.data.util.Lazy;
+
 import javax.persistence.*;
 import java.util.*;
 
@@ -17,12 +19,12 @@ public class FileDBGrupo {
 
     private String Exchage;
 
-    public Set<FileDbUsuarios> getPertenece() {
-        return Pertenece;
-    }
+    //public Set<FileDbUsuarios> getPertenece() {
+       // return Pertenece;
+    //}
 
-    @ManyToMany(mappedBy = "gruposSet")
-    private Set<FileDbUsuarios> Pertenece = new HashSet<>();
+    //@ManyToMany(targetEntity = FileDbUsuarios.class, fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "gruposSet")
+    //private Set<FileDbUsuarios> Pertenece = new HashSet<>();
 
 
     public FileDBGrupo() {
@@ -87,7 +89,7 @@ public class FileDBGrupo {
         Exchage = exchage;
     }
 
-    public void addMember(FileDbUsuarios miembro){
-        Pertenece.add(miembro);
-    }
+    //public void addMember(FileDbUsuarios miembro){
+        //Pertenece.add(miembro);
+    //}
 }

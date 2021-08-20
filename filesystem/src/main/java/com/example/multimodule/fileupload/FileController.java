@@ -12,10 +12,12 @@
     import org.springframework.web.multipart.MultipartFile;
     import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+    import java.lang.reflect.Array;
     import java.util.ArrayList;
     import java.util.List;
     import java.util.Optional;
     import java.util.stream.Collectors;
+    import java.util.Set;
 
     import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
     import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -119,9 +121,6 @@
             }
         }
 
-
-
-
         @PostMapping("/Usuarios")
         ResponseEntity<ResponseMessage> newUser(@RequestBody String body) {
             String parts[] = body.split("&");
@@ -152,8 +151,6 @@
             return Usuario.get(0).toString();
         }
 
-
-
         @GetMapping("/Usuarios/{id}")
         EntityModel<FileDbUsuarios> one(@PathVariable("id") Long id) {
             System.out.println(id);
@@ -161,6 +158,48 @@
                     .orElseThrow(() -> new EmployeeNotFoundException(id));
 
             return assembler.toModel(Usuario);
+        }
+
+        @GetMapping("/Usuarios/{name}/gruposet")
+        CollectionModel<EntityModel<FileDBGrupo>> grupospertenece(@PathVariable("name") String name) {
+            System.out.println(name);
+            List<FileDbUsuarios> Usuario = repository.findByName(name);
+
+            List<EntityModel<FileDBGrupo>> grupos = Usuario.get(0).getGruposSet().stream()
+                    .map(assemblerGrupo::toModel)
+                    .collect(Collectors.toList());
+
+            System.out.println(CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel()).getContent().toString());
+
+            return CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel());
+        }
+        @PostMapping("/Usuarios/{id}/gruposet")
+        ResponseEntity<ResponseMessage> newUserinGroup(@PathVariable("id") Long id, @RequestBody String body) {
+            String parts[] = body.split("&");
+            String username = parts[0];
+            String groupName = parts[1];
+
+            System.out.println(username);
+            List<FileDbUsuarios> Usuario = repository.findByName(username);
+
+            String message = "";
+            ArrayList<FileDbUsuarios> ListaMiembros = null;
+            try {
+                if (!repository.findByName(username).isEmpty()) {
+                    if(repositoryGrupo.findByName(groupName).isEmpty()){
+                        repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName));
+                        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+                    } else {
+                        message = "Group " + groupName + "does already exist";
+                        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+                    }
+                } else {
+                    message = "User " + username + "does not exist";
+                    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+            }
         }
 
         @PutMapping("/Usuarios/{id}")
@@ -202,19 +241,6 @@
             return CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel());
         }
 
-        // Nueva Función
-        public boolean newGroupInternal(String newGroup) {
-            String message = "";
-            ArrayList<FileDbUsuarios> ListaMiembros = null;
-            try {
-                repositoryGrupo.save(new FileDBGrupo(newGroup, "Lista", "Exchange"));
-                return true;
-            } catch (Exception e) {
-                System.out.println("ERROR AL AÑADIR EL GRUPO: " + e.toString());
-                return false;
-            }
-        }
-
         @PostMapping("/Grupos")
         ResponseEntity<ResponseMessage> newGroup(@RequestBody String body) {
             String parts[] = body.split("&");
@@ -223,10 +249,15 @@
 
             String message = "";
             ArrayList<FileDbUsuarios> ListaMiembros = null;
+            FileDbUsuarios U;
             try {
                 if (!repository.findByName(username).isEmpty()) {
                     if(repositoryGrupo.findByName(groupName).isEmpty()){
-                        repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName));
+                        //repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName));
+                        U=repository.findByName(username).get(0);
+                        EntityModel<FileDBGrupo> entityModelGrupo = assemblerGrupo.toModel(new FileDBGrupo(groupName, "", groupName));
+                        U.getGruposSet().add(entityModelGrupo.getContent());
+                        replaceUser(U,U.getId());
                         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
                     } else {
                         message = "Group " + groupName + "does already exist";
@@ -239,21 +270,5 @@
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
             }
-        }
-
-        @PostMapping("/Grupo/{id}")
-        @ResponseStatus(HttpStatus.CREATED)
-        ResponseEntity<ResponseMessage> AddUser(@RequestBody Long MiembroID, @PathVariable Long id) {
-            try
-            {
-                Optional<FileDBGrupo> grupo = repositoryGrupo.findById(id);
-                Optional<FileDbUsuarios> miembro = repository.findById(MiembroID);
-
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("Miembro añadido al grupro"));
-            }
-            catch (Exception e){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage("No se ha podido realizar la peticion"));
-            }
-
         }
     }

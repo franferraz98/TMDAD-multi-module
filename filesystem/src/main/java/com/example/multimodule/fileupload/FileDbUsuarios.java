@@ -8,7 +8,8 @@ import java.util.Set;
 @Entity(name = "Usuarios")
 @Table(name = "usuarios")
 public class FileDbUsuarios {
-        @Id
+
+    @Id
         @GeneratedValue(strategy= GenerationType.AUTO)
         private Long id;
 
@@ -18,14 +19,18 @@ public class FileDbUsuarios {
         return gruposSet;
     }
 
+    public void setGruposSet(Set<FileDBGrupo> gruposSet) {
+        this.gruposSet = gruposSet;
+    }
+
     @ManyToMany(cascade = {
                 CascadeType.PERSIST,
-                CascadeType.MERGE
+                CascadeType.ALL
         })
-        @JoinTable(name = "usuarios_grupos",
-                joinColumns = @JoinColumn(name = "usuarios_id"),
-                inverseJoinColumns = @JoinColumn(name = "grupos_id")
-        )
+    @JoinTable(name = "usuarios_grupos",
+            joinColumns = @JoinColumn(name = "usuarios_id"),
+            inverseJoinColumns = @JoinColumn(name = "grupos_id")
+    )
         private Set<FileDBGrupo> gruposSet = new HashSet<>();
 
         private String Contraseña;
