@@ -1,8 +1,8 @@
 com/example/multimodule/application/NavigationController.java
  com.example.multimodule.application.NavigationController
  com.example.multimodule.application.NavigationController$GroupSimulator
-com/example/multimodule/application/Receiver.java
- com.example.multimodule.application.Receiver
+com/example/multimodule/application/Runner.java
+ com.example.multimodule.application.Runner
 com/example/multimodule/application/WebSocketConfig.java
  com.example.multimodule.application.WebSocketConfig
 com/example/multimodule/application/ChatController.java
@@ -13,5 +13,5 @@ com/example/multimodule/application/JsonMessage.java
  com.example.multimodule.application.JsonMessage
 com/example/multimodule/application/WSRabbitApplication.java
  com.example.multimodule.application.WSRabbitApplication
-com/example/multimodule/application/Runner.java
- com.example.multimodule.application.Runner
+com/example/multimodule/application/Receiver.java
+ com.example.multimodule.application.Receiver

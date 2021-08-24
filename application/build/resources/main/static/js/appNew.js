@@ -133,7 +133,7 @@ function connectToRoomCreator() {
 
 function connectToUserAdder() {
     // Add user to chat room
-    var socket = new SockJS('/addToRoom');
+    var socket = new SockJS('/app/addToRoom');
     stompClientUA = Stomp.over(socket);
     stompClientUA.connect({}, function(frame) {
         setConnected(true);

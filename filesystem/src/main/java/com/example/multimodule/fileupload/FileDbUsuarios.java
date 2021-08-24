@@ -1,5 +1,7 @@
 package com.example.multimodule.fileupload;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
@@ -11,8 +13,10 @@ public class FileDbUsuarios {
 
     @Id
         @GeneratedValue(strategy= GenerationType.AUTO)
+        @JsonView(Views.Summary.class)
         private Long id;
 
+        @JsonView(Views.Summary.class)
         private String name;
 
     public Set<FileDBGrupo> getGruposSet() {
@@ -23,18 +27,12 @@ public class FileDbUsuarios {
         this.gruposSet = gruposSet;
     }
 
-    @ManyToMany(cascade = {
-                CascadeType.PERSIST,
-                CascadeType.ALL
-        })
-    @JoinTable(name = "usuarios_grupos",
-            joinColumns = @JoinColumn(name = "usuarios_id"),
-            inverseJoinColumns = @JoinColumn(name = "grupos_id")
-    )
-        private Set<FileDBGrupo> gruposSet = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "Pertenece")
+    private Set<FileDBGrupo> gruposSet = new HashSet<>();
 
         private String Contraseña;
 
+        @JsonView(Views.Summary.class)
         private String Cola;
 
         public FileDbUsuarios() {

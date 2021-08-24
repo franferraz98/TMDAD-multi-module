@@ -1,5 +1,6 @@
 package com.example.multimodule.fileupload;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.data.util.Lazy;
 
 import javax.persistence.*;
@@ -9,22 +10,34 @@ import java.util.*;
 @Table(name = "grupos")
 public class FileDBGrupo {
 
+    @JsonView(Views.Summary.class)
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
+    @JsonView(Views.Summary.class)
     private String name;
 
+    @JsonView(Views.Summary.class)
     private String ListaColas;
 
+    @JsonView(Views.Summary.class)
     private String Exchage;
 
-    //public Set<FileDbUsuarios> getPertenece() {
-       // return Pertenece;
-    //}
+    public Set<FileDbUsuarios> getPertenece() {
+        return Pertenece;
+    }
 
-    //@ManyToMany(targetEntity = FileDbUsuarios.class, fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "gruposSet")
-    //private Set<FileDbUsuarios> Pertenece = new HashSet<>();
+    @JsonView(Views.Summary.class)
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.ALL
+    }, fetch = FetchType.LAZY)
+    @JoinTable(name = "usuarios_grupos",
+            joinColumns = @JoinColumn(name = "grupos_id"),
+            inverseJoinColumns = @JoinColumn(name = "usuarios_id")
+    )
+    private Set<FileDbUsuarios> Pertenece = new HashSet<>();
 
 
     public FileDBGrupo() {
@@ -89,7 +102,7 @@ public class FileDBGrupo {
         Exchage = exchage;
     }
 
-    //public void addMember(FileDbUsuarios miembro){
-        //Pertenece.add(miembro);
-    //}
+    public void addMember(FileDbUsuarios miembro){
+        Pertenece.add(miembro);
+    }
 }

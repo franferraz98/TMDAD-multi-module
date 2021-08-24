@@ -1,5 +1,6 @@
     package com.example.multimodule.fileupload;
 
+    import com.fasterxml.jackson.annotation.JsonView;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.hateoas.CollectionModel;
     import org.springframework.hateoas.EntityModel;
@@ -160,41 +161,43 @@
             return assembler.toModel(Usuario);
         }
 
-        @GetMapping("/Usuarios/{name}/gruposet")
-        CollectionModel<EntityModel<FileDBGrupo>> grupospertenece(@PathVariable("name") String name) {
-            System.out.println(name);
-            List<FileDbUsuarios> Usuario = repository.findByName(name);
+ //       @GetMapping("/Usuarios/{name}/gruposet")
+ //       CollectionModel<EntityModel<FileDBGrupo>> grupospertenece(@PathVariable("name") String name) {
+ //           System.out.println(name);
+ //           List<FileDbUsuarios> Usuario = repository.findByName(name);
+//
+  //          List<EntityModel<FileDBGrupo>> grupos = Usuario.get(0).getGruposSet().stream()
+   //                 .map(assemblerGrupo::toModel)
+     //               .collect(Collectors.toList());
 
-            List<EntityModel<FileDBGrupo>> grupos = Usuario.get(0).getGruposSet().stream()
-                    .map(assemblerGrupo::toModel)
-                    .collect(Collectors.toList());
+       //     System.out.println(CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel()).getContent().toString());
 
-            System.out.println(CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel()).getContent().toString());
-
-            return CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel());
-        }
-        @PostMapping("/Usuarios/{id}/gruposet")
-        ResponseEntity<ResponseMessage> newUserinGroup(@PathVariable("id") Long id, @RequestBody String body) {
+         //   return CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel());
+        //}
+        @PostMapping("/Grupos/addToGroup")
+        ResponseEntity<ResponseMessage> newUserinGroup(@RequestBody String body) {
             String parts[] = body.split("&");
-            String username = parts[0];
-            String groupName = parts[1];
+            String groupname = parts[0];
+            String newmemberName = parts[1];
 
-            System.out.println(username);
-            List<FileDbUsuarios> Usuario = repository.findByName(username);
+            System.out.println(groupname);
+            List<FileDbUsuarios> Usuario = repository.findByName(groupname);
 
             String message = "";
-            ArrayList<FileDbUsuarios> ListaMiembros = null;
+            FileDBGrupo G = null;
             try {
-                if (!repository.findByName(username).isEmpty()) {
-                    if(repositoryGrupo.findByName(groupName).isEmpty()){
-                        repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName));
+                if (repository.findByName(groupname).isEmpty()) {
+                    if(repositoryGrupo.findByName(newmemberName).isEmpty()){
+                        G = repositoryGrupo.findByName(groupname).get(0);
+                        G.addMember(repository.findByName(newmemberName).get(0));
+                        repositoryGrupo.save(G);
                         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
                     } else {
-                        message = "Group " + groupName + "does already exist";
+                        message = "Group " + newmemberName + "does already exist";
                         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
                     }
                 } else {
-                    message = "User " + username + "does not exist";
+                    message = "User " + groupname + "does not exist";
                     return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
                 }
             } catch (Exception e) {
@@ -231,6 +234,7 @@
             return ResponseEntity.noContent().build();
         }
 
+        @JsonView(Views.Summary.class)
         @GetMapping("/Grupos")
         CollectionModel<EntityModel<FileDBGrupo>> allGroup() {
 
@@ -250,14 +254,14 @@
             String message = "";
             ArrayList<FileDbUsuarios> ListaMiembros = null;
             FileDbUsuarios U;
+            FileDBGrupo G;
             try {
                 if (!repository.findByName(username).isEmpty()) {
                     if(repositoryGrupo.findByName(groupName).isEmpty()){
-                        //repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName));
+                        G = repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName));
                         U=repository.findByName(username).get(0);
-                        EntityModel<FileDBGrupo> entityModelGrupo = assemblerGrupo.toModel(new FileDBGrupo(groupName, "", groupName));
-                        U.getGruposSet().add(entityModelGrupo.getContent());
-                        replaceUser(U,U.getId());
+                        G.getPertenece().add(U);
+                        repositoryGrupo.save(G);
                         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
                     } else {
                         message = "Group " + groupName + "does already exist";
