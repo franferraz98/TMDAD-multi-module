@@ -2,6 +2,8 @@ package com.example.multimodule.application;
 
 
 import com.example.multimodule.fileupload.FileController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -12,6 +14,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +26,8 @@ import java.util.List;
 @Service
 @Controller
 public class Receiver {
+
+    private static Logger logger = LoggerFactory.getLogger(Receiver.class);
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private List<String> allQueueNames;
@@ -66,6 +73,8 @@ public class Receiver {
         String user = parts[1];
 
         Queue queue = new Queue(user, true);
+        allQueueNames.add(user);
+        rabbitAdmin.declareQueue(queue);
         FanoutExchange exchange = new FanoutExchange(room);
         Binding binding = BindingBuilder.bind(queue).to(exchange);
 
@@ -76,16 +85,6 @@ public class Receiver {
     public void createChatRoom (final JsonMessage jsonMessage){
         String queueName = jsonMessage.getFrom();
         String exchangeName = jsonMessage.getText();
-
-        /*
-        boolean b = fileController.newGroupInternal(exchangeName);
-
-        if(b){
-            System.out.println("ALMACENADO CON EXITO");
-        } else {
-            System.out.println("ERROR AL ALMACENAR");
-        }
-        */
 
         rabbitAdmin.deleteExchange(exchangeName);
         FanoutExchange exchange = new FanoutExchange(exchangeName);
@@ -100,6 +99,8 @@ public class Receiver {
     @MessageMapping("/route")
     public void newBind (final JsonMessage jsonMessage) {
         String queueName = jsonMessage.getText();
+        // System.out.println("Queue: " + queueName);
+        logger.debug("Queue: " + queueName);
         allQueueNames.add(queueName);
         String keyMask = "foo.bar." + jsonMessage.getText();
         org.springframework.amqp.core.Queue queue = new org.springframework.amqp.core.Queue(queueName, true);
@@ -118,7 +119,8 @@ public class Receiver {
             try{
                 this.receiveMessage(msg);
             } catch (Exception e){
-                System.out.println("ERROR: " + e);
+                // System.out.println("ERROR: " + e);
+                logger.error("ERROR", e);
             }
         }
 

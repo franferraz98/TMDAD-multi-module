@@ -84,6 +84,15 @@
                     .body(fileDB.getData());
         }
 
+        @JsonView(Views.Summary.class)
+        @GetMapping("/Usuarios")
+        List<FileDbUsuarios> all() {
+
+            List<FileDbUsuarios> usuarios = repository.findAll();
+            return usuarios;
+        }
+
+        /*
         @GetMapping("/Usuarios")
         CollectionModel<EntityModel<FileDbUsuarios>> all() {
 
@@ -93,6 +102,7 @@
 
             return CollectionModel.of(usuarios, linkTo(methodOn(FileController.class).all()).withSelfRel());
         }
+         */
 
         @PostMapping("/Usuarios/login")
         ResponseEntity<ResponseMessage> login(@RequestBody String body) {
@@ -236,6 +246,14 @@
 
         @JsonView(Views.Summary.class)
         @GetMapping("/Grupos")
+        List<FileDBGrupo> allGroup() {
+            List<FileDBGrupo> l = repositoryGrupo.findAll();
+            return l;
+        }
+
+        /*
+        @JsonView(Views.Summary.class)
+        @GetMapping("/Grupos")
         CollectionModel<EntityModel<FileDBGrupo>> allGroup() {
 
             List<EntityModel<FileDBGrupo>> grupos = repositoryGrupo.findAll().stream()
@@ -244,6 +262,7 @@
 
             return CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel());
         }
+         */
 
         @PostMapping("/Grupos")
         ResponseEntity<ResponseMessage> newGroup(@RequestBody String body) {

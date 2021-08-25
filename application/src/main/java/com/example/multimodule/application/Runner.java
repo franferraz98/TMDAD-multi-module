@@ -35,7 +35,7 @@ public class Runner {
         String[] parts = message.split(":::");
         String exchange = parts[parts.length - 1];
         String text = parts[0] + ":::";
-        for(int i = 1; i< parts.length; i++){
+        for(int i = 1; i< parts.length - 1; i++){
             text += parts[i];
         }
         SimpleMessageConverter converter = new SimpleMessageConverter();

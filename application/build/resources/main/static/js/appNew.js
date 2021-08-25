@@ -1,7 +1,4 @@
 var stompClient = null;
-var stompClientRC = null;
-var stompClientUA = null;
-var stompClientAdmin = null;
 
 var username = null;
 
@@ -25,14 +22,6 @@ function setConnected(connected) {
     $("#greetings").html("");
 }
 
-function connectOld() {
-    // Connect to main chat
-    connectToMain();
-    // Connect to room creator
-    // connectToRoomCreator();
-
-}
-
 function connect() {
     // Check user & password
     var username = document.getElementById('username').value;
@@ -47,7 +36,7 @@ function connect() {
       if (req.readyState == 4) {
          if(req.status == 200) {
           console.log(req.status);
-          connectOld();
+          connectToMain();
          } else {
                console.log(req.responseText);
            }
@@ -56,15 +45,10 @@ function connect() {
     req.send(msg);
 }
 
-function instantConnectGroup() {
-    instantConnect();
-    connectToUserAdder();
-}
-
 function instantConnect() {
     var aux = sessionStorage.getItem("username");
     if (aux) {
-        var socket = new SockJS('/route');
+        var socket = new SockJS('/client');
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
             setConnected(true);
@@ -80,14 +64,10 @@ function instantConnect() {
                 showMessageOutput(JSON.parse(message.body));
             });
             console.log('Subscribed to queue');
-            stompClient.send("/app/route", {}, JSON.stringify({'from':username, 'text':username}));
+            var text = 'route---';
+            text = text.concat(username);
+            stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
             console.log('Sent');
-        });
-        socket = new SockJS('/createRoom');
-        stompClientRC = Stomp.over(socket);
-        stompClientRC.connect({}, function(frame) {
-            setConnected(true);
-            console.log('Connected to group creator: ' + frame);
         });
     }
 }
@@ -96,7 +76,7 @@ function instantConnect() {
 function connectToMain() {
     var aux = sessionStorage.getItem("username");
     console.log(aux)
-    var socket = new SockJS('/route');
+    var socket = new SockJS('/client');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
@@ -117,27 +97,10 @@ function connectToMain() {
             showMessageOutput(JSON.parse(message.body));
         });
         console.log('Subscribed to queue');
-        stompClient.send("/app/route", {}, JSON.stringify({'from':username, 'text':username}));
+        var text = 'route---';
+        text = text.concat(username);
+        stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
         console.log('Sent');
-    });
-}
-
-function connectToRoomCreator() {
-    var socket = new SockJS('/createRoom');
-    stompClientRC = Stomp.over(socket);
-    stompClientRC.connect({}, function(frame) {
-        setConnected(true);
-        console.log('Connected to group creator: ' + frame);
-    });
-}
-
-function connectToUserAdder() {
-    // Add user to chat room
-    var socket = new SockJS('/app/addToRoom');
-    stompClientUA = Stomp.over(socket);
-    stompClientUA.connect({}, function(frame) {
-        setConnected(true);
-        console.log('Connected to user adder: ' + frame);
     });
 }
 
@@ -145,48 +108,84 @@ function disconnect() {
     if (stompClient !== null) {
         stompClient.disconnect();
     }
-    if (stompClientRC !== null) {
-        stompClientRC.disconnect();
-    }
-    if (stompClientUA !== null) {
-        stompClientUA.disconnect();
-    }
+
     setConnected(false);
     sessionStorage.removeItem("username");
     console.log("Disconnected");
 }
 
 function createRoom() {
-    var text = document.getElementById('chatRoom').value;
-    stompClientRC.send("/app/createRoom", {}, JSON.stringify({'from':username, 'text':text}));
+    var username = sessionStorage.getItem("username");
+    var chatRoom = document.getElementById('chatRoom').value;
+
+    var req = new XMLHttpRequest();
+    var msg = username;
+    msg = msg.concat("&");
+    msg = msg.concat(chatRoom);
+    console.log(msg);
+    req.open('POST', 'http://localhost:8080/Grupos', false);
+    req.send(msg);
+    if (req.status == 200) {
+        console.log("Grupo CREADO");
+
+        var text = 'createRoom---';
+        text = text.concat(document.getElementById('chatRoom').value);
+        stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
+    } else {
+        // TODO: Presentar excepcion
+    }
 }
 
 function addToRoom() {
-    var from = document.getElementById('from').value;
-    var text = document.getElementById('room').value;
-    var user = document.getElementById('userToRoom').value;
-    text = text.concat(':::');
-    text = text.concat(user);
-    stompClient3.send("/app/addToRoom", {}, JSON.stringify({'from':from, 'text':text}));
+    var UserRoom = document.getElementById("userToRoom").value;
+    var groupname = document.getElementById("room").value;
+
+    var req = new XMLHttpRequest();
+    var msg = groupname;
+    msg = msg.concat("&");
+    msg = msg.concat(UserRoom);
+    console.log(msg);
+    req.open('POST', 'http://localhost:8080/Grupos/addToGroup', false);
+    req.send(msg);
+    if (req.status == 200) {
+        console.log("Grupo CREADO");
+
+        var from = document.getElementById('from').value;
+        var text = 'addToRoom---';
+        text = text.concat(document.getElementById('room').value);
+        text = text.concat(':::');
+        text = text.concat(UserRoom);
+        stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
+    } else {
+        // TODO: Presentar excepcion
+    }
 }
 
 function sendMessage() {
     var from = document.getElementById('from').value;
-    var text = document.getElementById('text').value;
+    if(from == ""){
+        from = username;
+    }
+    var text = 'chat---';
+    text = text.concat(document.getElementById('text').value);
     text = text.concat(':::');
     text = text.concat(document.getElementById('destination').value);
-    stompClient.send("/app/chat", {}, JSON.stringify({'from':from, 'text':text}));
+    stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
 }
 
 function sendToRoom() {
     var from = document.getElementById('from').value;
-    var text = document.getElementById('textRoom').value;
+    if(from == ""){
+        from = username;
+    }
+    var text = 'chatRoom---';
+    text = text.concat(document.getElementById('textRoom').value);
     var dest = document.getElementById('destRoom').value
     from = from.concat('@');
     from = from.concat(dest);
     text = text.concat(':::');
     text = text.concat(dest);
-    stompClient.send("/app/chatRoom", {}, JSON.stringify({'from':from, 'text':text}));
+    stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
 }
 
 function showMyGroups(){

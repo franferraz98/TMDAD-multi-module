@@ -37,8 +37,6 @@ public class NavigationController {
     public String getInfo(Model model, @RequestParam(value = "from", required = false) String from,
     @RequestParam(value = "username", required = false) String username){
 
-        System.out.println("USERNAME: " + username);
-
         model.addAttribute("activePage", "groups");
         GroupSimulator g1 = new GroupSimulator("Grupo1","http://localhost:8080/group/1");
         GroupSimulator g2 = new GroupSimulator("Grupo2","http://localhost:8080/group/2");
@@ -52,10 +50,10 @@ public class NavigationController {
     }
 
     @GetMapping("/group/{id}")
-    public String getContact(Model model, @PathVariable String id, @RequestParam(value = "from", required = false) String from){
+    public String getContact(Model model, @PathVariable String id /*, @RequestParam(value = "from", required = false) String from*/){
         model.addAttribute("activePage", "group" + id);
-        System.out.println("FROM: " + from);
-        model.addAttribute("from", from);
+        // System.out.println("FROM: " + from);
+        // model.addAttribute("from", from);
         return "group";
     }
 

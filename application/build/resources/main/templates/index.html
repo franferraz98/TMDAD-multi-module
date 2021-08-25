@@ -38,7 +38,7 @@
     <div>
         <input type="text" id="from" th:name="from" name="from" placeholder="Choose a nickname"/>
         <input type="text" id="username" th:name="username" name="username" placeholder="Write your username..."/>
-        <button id="connect" onclick="connectOld();">Connect</button>
+        <button id="connect" onclick="connectToMain();">Connect</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
         <!--button id="subscribe" disabled="disabled" onclick="subscribe();">Subscribe</button-->
     </div>
@@ -55,7 +55,7 @@
     <br /-->
     <div id="createRoomDiv">
         <input type="text" id="chatRoom" placeholder="Add new chatroom name..."/>
-        <button id="createRoom" onclick="createGroup();">Create Room</button>
+        <button id="createRoom" onclick="createRoom();">Create Room</button>
     </div>
     <br />
     <div id="conversationDiv">
