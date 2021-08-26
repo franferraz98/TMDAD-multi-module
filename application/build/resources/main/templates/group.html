@@ -7,7 +7,7 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{styles/main.css}" rel="stylesheet"/>
 
-    <script src="../js/appNew.js"></script>
+    <script th:src="@{../js/appNew.js}"></script>
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
@@ -23,10 +23,7 @@
     enabled. Please enable
     Javascript and reload this page!</h2></noscript>
 
-<div>
-    <br />
-    <div th:text="${activePage}"> </div>
-    <div th:text="${from}"> </div>
+<p>
     <br />
     <div>
         <input type="text" id="from" placeholder="Choose a nickname"/>
@@ -40,15 +37,16 @@
     </div>
     <br />
     <div id="addToRoomDiv">
-        <input type="text" id="room" placeholder="Select room..."/>
+        <script th:inline="javascript">
+            var aP = /*[[${activePage}]]*/;
+        </script>
         <input type="text" id="userToRoom" placeholder="Add a user to room..."/>
-        <button id="addToRoom" onclick="addToRoom();">Add to Room</button>
+        <button id="addToRoom" th:onclick="addToRoom(aP);">Add to Room</button>
     </div>
     <br />
     <div id="converRoomDiv">
-        <input type="text" id="destRoom" placeholder="Write your destination room..."/>
         <input type="text" id="textRoom" placeholder="Write a message..."/>
-        <button id="sendToRoom" onclick="sendToRoom();">Send</button>
+        <button id="sendToRoom" onclick="sendToRoom(aP);">Send</button>
     </div>
     <br />
     <div><p id="response"></p></div>
