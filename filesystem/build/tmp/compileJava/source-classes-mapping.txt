@@ -24,6 +24,7 @@ com/example/multimodule/fileupload/FileDBGrupoRepository.java
  com.example.multimodule.fileupload.FileDBGrupoRepository
 com/example/multimodule/fileupload/Views.java
  com.example.multimodule.fileupload.Views
+ com.example.multimodule.fileupload.Views$Groups
  com.example.multimodule.fileupload.Views$Summary
 com/example/multimodule/fileupload/FileDbUsuarios.java
  com.example.multimodule.fileupload.FileDbUsuarios

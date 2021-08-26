@@ -13,12 +13,12 @@
     import org.springframework.web.multipart.MultipartFile;
     import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+    import java.io.File;
     import java.lang.reflect.Array;
-    import java.util.ArrayList;
-    import java.util.List;
-    import java.util.Optional;
+    import java.net.HttpURLConnection;
+    import java.net.URL;
+    import java.util.*;
     import java.util.stream.Collectors;
-    import java.util.Set;
 
     import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
     import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -171,24 +171,12 @@
             return assembler.toModel(Usuario);
         }
 
- //       @GetMapping("/Usuarios/{name}/gruposet")
- //       CollectionModel<EntityModel<FileDBGrupo>> grupospertenece(@PathVariable("name") String name) {
- //           System.out.println(name);
- //           List<FileDbUsuarios> Usuario = repository.findByName(name);
-//
-  //          List<EntityModel<FileDBGrupo>> grupos = Usuario.get(0).getGruposSet().stream()
-   //                 .map(assemblerGrupo::toModel)
-     //               .collect(Collectors.toList());
-
-       //     System.out.println(CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel()).getContent().toString());
-
-         //   return CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel());
-        //}
         @PostMapping("/Grupos/addToGroup")
         ResponseEntity<ResponseMessage> newUserinGroup(@RequestBody String body) {
             String parts[] = body.split("&");
             String groupname = parts[0];
             String newmemberName = parts[1];
+            String from = parts[2];
 
             System.out.println(groupname);
             List<FileDbUsuarios> Usuario = repository.findByName(groupname);
@@ -198,10 +186,21 @@
             try {
                 if (repository.findByName(groupname).isEmpty()) {
                     if(repositoryGrupo.findByName(newmemberName).isEmpty()){
-                        G = repositoryGrupo.findByName(groupname).get(0);
-                        G.addMember(repository.findByName(newmemberName).get(0));
-                        repositoryGrupo.save(G);
-                        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+                        List<FileDBGrupo> all = repositoryGrupo.findByName(groupname);
+                        FileDBGrupo group = all.get(0);
+                        Set<FileDbUsuarios> usuarios =  group.getPertenece();
+                        Iterator<FileDbUsuarios> iter = usuarios.iterator();
+                        FileDbUsuarios usuario = iter.next();
+                        System.out.println(usuario);
+                        if(usuario.getName().equals(from)){
+                            G = repositoryGrupo.findByName(groupname).get(0);
+                            G.addMember(repository.findByName(newmemberName).get(0));
+                            repositoryGrupo.save(G);
+                            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+                        } else {
+                            message = "Only the administrator can add users";
+                            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+                        }
                     } else {
                         message = "Group " + newmemberName + "does already exist";
                         return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
@@ -294,4 +293,28 @@
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
             }
         }
+
+        @JsonView(Views.Groups.class)
+        @GetMapping("/getGroups/{username}")
+        public Set<FileDBGrupo> getGroups(@PathVariable String username){
+
+            FileDbUsuarios usuario = repository.findByName(username).get(0);
+            Set<FileDBGrupo> grupos = usuario.getGruposSet();
+
+            return grupos;
+        }
+
+        @RequestMapping ("/Grupos/{name}/{name2}")
+        @ResponseStatus(HttpStatus.ACCEPTED)
+        ResponseEntity<?> deleteUserFromGroup(@PathVariable String name, @PathVariable String name2) {
+            try {
+                FileDBGrupo g = repositoryGrupo.findByName(name).get(0);
+                g.deleteMember(repository.findByName(name2).get(0));
+                repositoryGrupo.save(g);
+            } catch (Exception e) {
+                System.err.println("Error when deleting " + e);
+            }
+            return ResponseEntity.noContent().build();
+        }
+
     }

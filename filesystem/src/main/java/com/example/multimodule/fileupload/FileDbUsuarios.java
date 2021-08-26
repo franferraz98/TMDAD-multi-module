@@ -13,10 +13,10 @@ public class FileDbUsuarios {
 
     @Id
         @GeneratedValue(strategy= GenerationType.AUTO)
-        @JsonView(Views.Summary.class)
+        @JsonView({Views.Summary.class, Views.Groups.class})
         private Long id;
 
-        @JsonView(Views.Summary.class)
+        @JsonView({Views.Summary.class, Views.Groups.class})
         private String name;
 
     public Set<FileDBGrupo> getGruposSet() {
@@ -27,6 +27,7 @@ public class FileDbUsuarios {
         this.gruposSet = gruposSet;
     }
 
+    @JsonView(Views.Groups.class)
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "Pertenece")
     private Set<FileDBGrupo> gruposSet = new HashSet<>();
 

@@ -8,9 +8,12 @@
     <link th:href="@{styles/main.css}" rel="stylesheet"/>
 
     <script src="js/appNew.js"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 
 </head>
-<body class="d-flex flex-column h-100" onload="instantConnect()">
+<body class="d-flex flex-column h-100" onload="connectInfo()">
 
 <div th:replace="~{fragments/header :: header}"></div>
 
@@ -21,16 +24,19 @@
         <th> URL </th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:if="${groups.empty}">
+    <tbody id="response">
+    <!--tr th:if="${groups.empty}">
         <td colspan="2"> No Groups Available </td>
     </tr>
     <tr th:each="group : ${groups}">
         <td><span th:text="${group.name}"> Title </span></td>
         <td><a th:href="${group.url}"><span th:text="${group.url}"> URL </span></a></td>
     </tr>
+    </tbody-->
+    <!-- tr id="response"></tr-->
     </tbody>
 </table>
+
 
 <div>
     <button id="getGroups" onclick="showMyGroups();">Show Groups</button>

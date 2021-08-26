@@ -104,6 +104,46 @@ function connectToMain() {
     });
 }
 
+function connectInfo() {
+    instantConnect();
+
+    var req = new XMLHttpRequest();
+    var username = sessionStorage.getItem("username");
+    req.open('GET', 'http://localhost:8080/getGroups/' + username, false);
+    req.send(null);
+    if (req.status == 200) {
+        var json = JSON.parse(req.responseText);
+        console.log(json);
+
+        /*
+        var response = document.getElementById('response');
+        var p = document.createElement('tr');
+
+        for (var i = 0; i < json.length; i++){
+            var obj = json[i];
+            // p.style.wordWrap = 'break-word';
+            p.appendChild(document.createDocumentFragment("<td><span th:text=" + obj.name + "></span></td>"));
+            var url = "http://localhost:8080/group/" + obj.name;
+            p.appendChild(document.createDocumentFragment("<td><a th:href=" + url + "><span th:text=" + url + "></span></a></td>"));
+        }
+
+        response.appendChild(p);
+        */
+
+        let text = "<table border='1'>"
+        for (let x in json) {
+            let url = "http://localhost:8080/group/" + json[x].name;
+            text += "<tr><td>" + json[x].name + "</td>" + "<td><a href=\ " + url + ">" + url + "</td></a><tr/>";
+        }
+        text += "</table>"
+        document.getElementById("response").innerHTML = text;
+
+    } else {
+        // TODO: Presentar excepcion
+    }
+
+}
+
 function disconnect() {
     if (stompClient !== null) {
         stompClient.disconnect();
@@ -136,23 +176,27 @@ function createRoom() {
     }
 }
 
-function addToRoom() {
+function addToRoom(activePage) {
     var UserRoom = document.getElementById("userToRoom").value;
-    var groupname = document.getElementById("room").value;
+    var username = sessionStorage.getItem("username");
+    var groupname = activePage.replace('group/', '');
+    // console.log(groupname);
 
     var req = new XMLHttpRequest();
     var msg = groupname;
     msg = msg.concat("&");
     msg = msg.concat(UserRoom);
-    console.log(msg);
+    msg = msg.concat("&")
+    msg = msg.concat(username);
+    // console.log(msg);
     req.open('POST', 'http://localhost:8080/Grupos/addToGroup', false);
     req.send(msg);
     if (req.status == 200) {
-        console.log("Grupo CREADO");
+        console.log("Usuario AÑADIDO");
 
         var from = document.getElementById('from').value;
         var text = 'addToRoom---';
-        text = text.concat(document.getElementById('room').value);
+        text = text.concat(groupname);
         text = text.concat(':::');
         text = text.concat(UserRoom);
         stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
@@ -173,14 +217,14 @@ function sendMessage() {
     stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
 }
 
-function sendToRoom() {
+function sendToRoom(activePage) {
     var from = document.getElementById('from').value;
     if(from == ""){
         from = username;
     }
     var text = 'chatRoom---';
     text = text.concat(document.getElementById('textRoom').value);
-    var dest = document.getElementById('destRoom').value
+    var dest = activePage.replace('group/', '');
     from = from.concat('@');
     from = from.concat(dest);
     text = text.concat(':::');

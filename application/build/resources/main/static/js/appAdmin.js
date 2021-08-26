@@ -2,7 +2,7 @@ var stompClientAdmin = null;
 
 function connectToAdmin() {
     // Connect to notification publisher
-    var socket = new SockJS('/notifications');
+    var socket = new SockJS('/client');
     stompClientAdmin = Stomp.over(socket);
     var password = document.getElementById('password').value;
     var result = password.localeCompare('admin');
@@ -20,8 +20,15 @@ function disconnectAdmin() {
     console.log("Disconnected Admin")
 }
 
+function subscribeAdmin(){
+    var from = 'notification';
+    var text = 'notifications---';
+    stompClientAdmin.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
+}
+
 function sendNotification() {
     var from = 'notification';
-    var text = document.getElementById('textNoti').value;
-    stompClientAdmin.send("/app/notify", {}, JSON.stringify({'from':from, 'text':text}));
+    var text = 'notify---';
+    text = text.concat(document.getElementById('textNoti').value);
+    stompClientAdmin.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
 }

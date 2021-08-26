@@ -8,6 +8,9 @@
     <link th:href="@{styles/main.css}" rel="stylesheet"/>
 
     <script src="js/appAdmin.js"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 
 </head>
 
@@ -27,11 +30,11 @@
         <input type="text" id="password" placeholder="Write the password..."/>
         <button id="connectAdmin" onclick="connectToAdmin();">Connect Admin</button>
         <button id="disconnectAdmin" disabled="disabled" onclick="disconnectAdmin();">Disconnect Admin</button>
-        <button id="subscribeAdmin" disabled="disabled" onclick="subscribeAdmin();">Subscribe Admin</button>
+        <button id="subscribeAdmin" onclick="subscribeAdmin();">Subscribe Admin</button>
     </div>
     <br />
     <div id="notificationsDiv">
-        <input type="text" id="textNoti" placeholder="Write a notification..."/>
+        <input type="text" id="textNoti" name="textNoti" placeholder="Write a notification..."/>
         <button id="sendNoti" onclick="sendNotification();">Send</button>
     </div>
     <br />

@@ -10,18 +10,18 @@ import java.util.*;
 @Table(name = "grupos")
 public class FileDBGrupo {
 
-    @JsonView(Views.Summary.class)
+    @JsonView({Views.Summary.class, Views.Groups.class})
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    @JsonView(Views.Summary.class)
+    @JsonView({Views.Summary.class, Views.Groups.class})
     private String name;
 
-    @JsonView(Views.Summary.class)
+    @JsonView({Views.Summary.class, Views.Groups.class})
     private String ListaColas;
 
-    @JsonView(Views.Summary.class)
+    @JsonView({Views.Summary.class, Views.Groups.class})
     private String Exchage;
 
     public Set<FileDbUsuarios> getPertenece() {
@@ -104,5 +104,9 @@ public class FileDBGrupo {
 
     public void addMember(FileDbUsuarios miembro){
         Pertenece.add(miembro);
+    }
+
+    public void deleteMember(FileDbUsuarios miembro){
+        Pertenece.remove(miembro);
     }
 }
