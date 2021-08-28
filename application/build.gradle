@@ -49,6 +49,7 @@ dependencies {
 	implementation 'com.wavefront:wavefront-spring-boot-starter'
 	implementation 'io.micrometer:micrometer-registry-prometheus:latest.release'
 	implementation 'io.micrometer:micrometer-registry-wavefront:latest.release'
+	implementation 'postgresql:postgresql:9.1-901.jdbc4'
 }
 
 dependencyManagement {

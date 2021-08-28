@@ -52,8 +52,6 @@ function connect() {
     text = text.concat(psw);
     stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
      */
-
-
 }
 
 function instantConnect() {
