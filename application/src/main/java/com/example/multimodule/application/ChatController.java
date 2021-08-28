@@ -104,6 +104,36 @@ public class ChatController {
                 String grupos = fileController.getGroupsSpring(jsonMessage.getFrom());
                 receiver.showGroups(grupos, jsonMessage.getFrom());
                 break;
+            case "signup":
+                text = text.replace(":::", "&");
+                b = fileController.newUserSpring(text);
+                switch (b){
+                    case 1:
+                        System.err.println("User already exists");
+                        break;
+                    case 2:
+                        System.err.println("Error in DB");
+                        break;
+                    default:
+                        System.out.println("User created");
+                }
+                break;
+            case "login":
+                b = fileController.loginSpring(text);
+                switch (b) {
+                    case 1:
+                        System.err.println("Password not correct");
+                        break;
+                    case 2:
+                        System.err.println("Doesn't exist");
+                        break;
+                    case 3:
+                        System.err.println("Error in DB");
+                        break;
+                    default:
+                        receiver.newBind(new JsonMessage(jsonMessage.getFrom(), jsonMessage.getFrom()));
+                        receiver.login(jsonMessage.getFrom());
+                }
             default:
                 // Error
                 text = "No functionality found";

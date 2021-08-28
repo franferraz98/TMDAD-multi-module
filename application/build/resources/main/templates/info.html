@@ -13,7 +13,7 @@
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 
 </head>
-<body class="d-flex flex-column h-100" onload="connectInfo()">
+<body class="d-flex flex-column h-100" onload="instantConnect()">
 
 <div th:replace="~{fragments/header :: header}"></div>
 
@@ -37,9 +37,8 @@
     </tbody>
 </table>
 
-
 <div>
-    <button id="getGroups" onclick="showMyGroups();">Show Groups</button>
+    <button id="showGroups" onclick="showGroups();">Show Groups</button>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

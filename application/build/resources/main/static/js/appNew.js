@@ -24,6 +24,7 @@ function connect() {
     // Check user & password
     var username = document.getElementById('username').value;
     var psw = document.getElementById('psw').value;
+
     var msg = username;
     msg = msg.concat("&");
     msg = msg.concat(psw);
@@ -43,6 +44,16 @@ function connect() {
       }
     };
     req.send(msg);
+    
+    /*
+    var text = 'login---';
+    text = text.concat(username);
+    text = text.concat("&");
+    text = text.concat(psw);
+    stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
+     */
+
+
 }
 
 function instantConnect() {
@@ -104,32 +115,39 @@ function connectToMain() {
     });
 }
 
-function connectInfo() {
-    instantConnect();
+function signup() {
+    var username = document.getElementById('username').value;
+    var psw = document.getElementById('psw').value;
+    var pswrepeat = document.getElementById('psw-repeat').value;
 
-    /*
-    var req = new XMLHttpRequest();
-    var username = sessionStorage.getItem("username");
-    req.open('GET', 'http://localhost:8080/getGroups/' + username, false);
-    req.send(null);
-    if (req.status == 200) {
-        var json = JSON.parse(req.responseText);
-        console.log(json);
+    if (psw == pswrepeat) {
 
+        /*
+        var from = document.getElementById('from').value;
+        var text = 'signup---';
+        text = text.concat(username);
+        text = text.concat(':::');
+        text = text.concat(psw);
+        stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
+        */
 
-
-        let text = "<table border='1'>"
-        for (let x in json) {
-            let url = "http://localhost:8080/group/" + json[x].name;
-            text += "<tr><td>" + json[x].name + "</td>" + "<td><a href=\ " + url + ">" + url + "</td></a><tr/>";
+        var req = new XMLHttpRequest();
+        var msg = username;
+        msg = msg.concat("&");
+        msg = msg.concat(psw);
+        console.log(msg);
+        req.open('POST', 'http://localhost:8080/Usuarios', false);
+        req.send(msg);
+        if (req.status == 200) {
+            console.log("USUARIO CREADO");
+            // window.location.replace("localhost:8080/login");
+        } else {
+            // TODO: Presentar excepcion
         }
-        text += "</table>"
-        document.getElementById("response").innerHTML = text;
 
     } else {
         // TODO: Presentar excepcion
     }
-    */
 }
 
 function showGroups() {
@@ -265,9 +283,6 @@ function sendToRoom(activePage) {
 function showMessageOutput(messageOutput) {
     let mO = messageOutput.text.toString();
     let parts = mO.split(":::");
-    console.log(messageOutput);
-    console.log(mO);
-    console.log(parts);
     if(parts[0] === "chat"){
         var response = document.getElementById('response');
         var p = document.createElement('p');
@@ -287,7 +302,9 @@ function showMessageOutput(messageOutput) {
             let url = "http://localhost:8080/group/" + value;
             text += "<tr><td>" + value + "</td>" + "<td><a href=\ " + url + ">" + url + "</td></a><tr/>";
         }
-
+    } else if(parts[0] === "login"){
+        sessionStorage.setItem("username", parts[1]);
+        connectToMain();
     } else{
         // Movidas
     }

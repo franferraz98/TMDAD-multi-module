@@ -137,6 +137,35 @@
             }
         }
 
+        public int loginSpring(String body) {
+            String parts[] = body.split("&");
+            String newUser = parts[0];
+            String contrasena = parts[1];
+            // System.out.println(body);
+            // System.out.println(contrasena.toString());
+            String message = "";
+            try {
+                List<FileDbUsuarios> lista = repository.findByName(newUser);
+                if (!lista.isEmpty()) {
+                    if (lista.get(0).getContraseña().equals(contrasena)) {
+                        message = "Password correct";
+                        System.out.println("Password correct");
+                        return 0;
+                    } else {
+                        message = "Password not correct";
+                        System.out.println("Password not correct");
+                        return 1;
+                    }
+                } else {
+                    message = newUser + "doesn't exist";
+                    return 2;
+                }
+            } catch (Exception e) {
+                message = "Could not sign in: " + newUser;
+                return 3;
+            }
+        }
+
         @PostMapping("/Usuarios")
         ResponseEntity<ResponseMessage> newUser(@RequestBody String body) {
             String parts[] = body.split("&");
@@ -146,7 +175,7 @@
             try {
                 if (repository.findByName(newUser).isEmpty()) {
                     repository.save(new FileDbUsuarios(newUser, contrasena, newUser));
-                    message = "User sing in successfully: " + newUser;
+                    message = "User sign in successfully: " + newUser;
                     return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
                 } else {
                     message = newUser + "does already exist";
@@ -155,6 +184,26 @@
             } catch (Exception e) {
                 message = "Could not sign in: " + newUser;
                 return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+            }
+        }
+
+        public int newUserSpring(String body) {
+            String parts[] = body.split("&");
+            String newUser = parts[0];
+            String contrasena = parts[1];
+            String message = "";
+            try {
+                if (repository.findByName(newUser).isEmpty()) {
+                    repository.save(new FileDbUsuarios(newUser, contrasena, newUser));
+                    message = "User sign in successfully: " + newUser;
+                    return 0;
+                } else {
+                    message = newUser + "does already exist";
+                    return 1;
+                }
+            } catch (Exception e) {
+                message = "Could not sign in: " + newUser;
+                return 2;
             }
         }
 

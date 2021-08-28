@@ -6,6 +6,7 @@ import com.example.multimodule.fileupload.FileDBGrupo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
@@ -19,11 +20,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Controller
@@ -151,11 +151,36 @@ public class Receiver {
     }
 
     public void showGroups(String grupos, String consumerQueue) throws Exception{
+        /*
+        Enumeration<NetworkInterface> enu = NetworkInterface.getNetworkInterfaces();
+        Iterator<NetworkInterface> iter =  enu.asIterator();
+        while(iter.hasNext()){
+            NetworkInterface net = iter.next();
+            Enumeration<InetAddress> enu2 = net.getInetAddresses();
+            Iterator<InetAddress> iter2 = enu2.asIterator();
+            while(iter2.hasNext()){
+                InetAddress addr = iter2.next();
+                String addrNum = addr.toString();
+                System.out.println(addrNum);
+            }
+        }
+        String address;
+        */
+
         String destination = "/topic/" +  consumerQueue;
         final String time = new SimpleDateFormat("HH:mm").format(new Date());
         String text = "showGroups:::";
         text = text.concat(grupos);
         text = text.substring(0, text.length() - 1);
+        simpMessagingTemplate.convertAndSend(destination,
+                new OutputMessage(consumerQueue, text, time));
+    }
+
+    public void login(String consumerQueue){
+        String destination = "/topic/" +  consumerQueue;
+        final String time = new SimpleDateFormat("HH:mm").format(new Date());
+        String text = "login:::";
+        text = text.concat(consumerQueue);
         simpMessagingTemplate.convertAndSend(destination,
                 new OutputMessage(consumerQueue, text, time));
     }
