@@ -1,7 +1,5 @@
 var stompClient = null;
 
-var username = null;
-
 function wait(ms){
    var start = new Date().getTime();
    var end = start;
@@ -31,14 +29,16 @@ function connect() {
     msg = msg.concat(psw);
     console.log(msg);
     var req = new XMLHttpRequest();
-    req.open('POST', 'http://localhost:8080/Usuarios/login', true); //TODO: Comprobar URI
+    req.open('POST', 'http://localhost:8080/Usuarios/login', false); //TODO: Comprobar URI
     req.onreadystatechange = function (aEvt) {
       if (req.readyState == 4) {
          if(req.status == 200) {
           console.log(req.status);
+          sessionStorage.setItem("username", username);
           connectToMain();
          } else {
-               console.log(req.responseText);
+             console.log(req.status);
+             console.log(req.responseText);
            }
       }
     };
@@ -218,6 +218,10 @@ function sendMessage() {
 }
 
 function sendToRoom(activePage) {
+
+    var req = new XMLHttpRequest();
+    var username = sessionStorage.getItem("username");
+
     var from = document.getElementById('from').value;
     if(from == ""){
         from = username;
@@ -229,6 +233,20 @@ function sendToRoom(activePage) {
     from = from.concat(dest);
     text = text.concat(':::');
     text = text.concat(dest);
+
+    var msg = username;
+    msg = msg.concat("&");
+    msg = msg.concat(dest);
+    msg = msg.concat("&");
+    msg = msg.concat(document.getElementById('textRoom').value);
+    req.open('POST', 'http://localhost:8080/Mensajes', false);
+    req.send(msg);
+    if (req.status == 200) {
+        console.log("Mesnaje guardado");
+    } else {
+        // Movidas
+    }
+
     stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
 }
 

@@ -14,7 +14,7 @@
 
 </head>
 
-<body onload="instantConnect()">
+<body>
 
 <div th:replace="~{fragments/header :: header}"></div>
 
@@ -31,12 +31,11 @@
       <label><b>Password</b></label>
       <input id="psw" type="password" placeholder="Enter Password" name="psw" required>
 
-      <label>
+      <!--label>
         <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
-      </label>
+      </label-->
 
       <div class="clearfix">
-        <button type="button" class="cancelbtn">Cancel</button>
         <button type="submit" class="loginpbtn" onclick="connect();">Log In</button>
         <button type="submit" class="logoutpbtn" onclick="disconnect();">Log Out</button>
       </div>

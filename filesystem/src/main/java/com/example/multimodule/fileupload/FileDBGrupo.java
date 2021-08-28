@@ -40,6 +40,17 @@ public class FileDBGrupo {
     private Set<FileDbUsuarios> Pertenece = new HashSet<>();
 
 
+    @JsonView(Views.Summary.class)
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.ALL
+    }, fetch = FetchType.LAZY)
+    @JoinTable(name = "mensajes_grupos",
+            joinColumns = @JoinColumn(name = "grupos_id"),
+            inverseJoinColumns = @JoinColumn(name = "mensajes_id")
+    )
+    private Set<Mensajes> MensajesGrupo = new HashSet<>();
+
     public FileDBGrupo() {
     }
 
@@ -104,6 +115,10 @@ public class FileDBGrupo {
 
     public void addMember(FileDbUsuarios miembro){
         Pertenece.add(miembro);
+    }
+
+    public void addMensaje(Mensajes mensaje){
+        MensajesGrupo.add(mensaje);
     }
 
     public void deleteMember(FileDbUsuarios miembro){

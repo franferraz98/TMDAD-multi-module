@@ -36,6 +36,9 @@
         private FileDBGrupoRepository repositoryGrupo;
 
         @Autowired
+        private MensajesRepository repositoryMensajes;
+
+        @Autowired
         private UserModelAssembler assembler;
 
         @Autowired
@@ -117,9 +120,11 @@
                 if (!lista.isEmpty()) {
                     if (lista.get(0).getContraseña().equals(contrasena)) {
                         message = "Password correct";
+                        System.out.println("Password correct");
                         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
                     } else {
                         message = "Password not correct";
+                        System.out.println("Password not correct");
                         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ResponseMessage(message));
                     }
                 } else {
@@ -154,7 +159,8 @@
         }
 
         @RequestMapping(value = "/Usuarios/get/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-        public @ResponseBody String getUsuario(@PathVariable("name") String name) {
+        public @ResponseBody
+        String getUsuario(@PathVariable("name") String name) {
             // System.out.println(name);
             List<FileDbUsuarios> Usuario = repository.findByName(name);
             System.out.println(Usuario.get(0));
@@ -185,14 +191,14 @@
             FileDBGrupo G = null;
             try {
                 if (repository.findByName(groupname).isEmpty()) {
-                    if(repositoryGrupo.findByName(newmemberName).isEmpty()){
+                    if (repositoryGrupo.findByName(newmemberName).isEmpty()) {
                         List<FileDBGrupo> all = repositoryGrupo.findByName(groupname);
                         FileDBGrupo group = all.get(0);
-                        Set<FileDbUsuarios> usuarios =  group.getPertenece();
+                        Set<FileDbUsuarios> usuarios = group.getPertenece();
                         Iterator<FileDbUsuarios> iter = usuarios.iterator();
                         FileDbUsuarios usuario = iter.next();
                         System.out.println(usuario);
-                        if(usuario.getName().equals(from)){
+                        if (usuario.getName().equals(from)) {
                             G = repositoryGrupo.findByName(groupname).get(0);
                             G.addMember(repository.findByName(newmemberName).get(0));
                             repositoryGrupo.save(G);
@@ -275,9 +281,9 @@
             FileDBGrupo G;
             try {
                 if (!repository.findByName(username).isEmpty()) {
-                    if(repositoryGrupo.findByName(groupName).isEmpty()){
+                    if (repositoryGrupo.findByName(groupName).isEmpty()) {
                         G = repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName));
-                        U=repository.findByName(username).get(0);
+                        U = repository.findByName(username).get(0);
                         G.getPertenece().add(U);
                         repositoryGrupo.save(G);
                         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
@@ -296,7 +302,7 @@
 
         @JsonView(Views.Groups.class)
         @GetMapping("/getGroups/{username}")
-        public Set<FileDBGrupo> getGroups(@PathVariable String username){
+        public Set<FileDBGrupo> getGroups(@PathVariable String username) {
 
             FileDbUsuarios usuario = repository.findByName(username).get(0);
             Set<FileDBGrupo> grupos = usuario.getGruposSet();
@@ -304,7 +310,7 @@
             return grupos;
         }
 
-        @RequestMapping ("/Grupos/{name}/{name2}")
+        @RequestMapping("/Grupos/{name}/{name2}")
         @ResponseStatus(HttpStatus.ACCEPTED)
         ResponseEntity<?> deleteUserFromGroup(@PathVariable String name, @PathVariable String name2) {
             try {
@@ -317,4 +323,40 @@
             return ResponseEntity.noContent().build();
         }
 
+        @PostMapping("/Mensajes")
+        ResponseEntity<ResponseMessage> newMensaje(@RequestBody String body) {
+            String parts[] = body.split("&");
+            String userName = parts[0];
+            String groupName = parts[1];
+            String Content = parts[2];
+
+            String message = "";
+            FileDBGrupo G;
+            try {
+                if (!repository.findByName(userName).isEmpty()) {
+                    if (!repositoryGrupo.findByName(groupName).isEmpty()) {
+                        G = repositoryGrupo.findByName(groupName).get(0);
+                        G.addMensaje(new Mensajes(userName, groupName, Content));
+                        repositoryGrupo.save(G);
+                        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+                    } else {
+                        message = "Group " + Content + "does already exist";
+                        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+                    }
+                } else {
+                    message = "User " + userName + "does not exist";
+                    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+                }
+
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+            }
+        }
+
+        @JsonView(Views.Summary.class)
+        @GetMapping("/Mensajes/{groupname}")
+        List<Mensajes> MensajeEnGrupo(@PathVariable String groupname) {
+            List<Mensajes> m = repositoryMensajes.findByGruposMensaje(repositoryGrupo.findByName(groupname).get(0));
+            return m;
+        }
     }
