@@ -2,6 +2,7 @@ package com.example.multimodule.application;
 
 
 import com.example.multimodule.fileupload.FileController;
+import com.example.multimodule.fileupload.FileDBGrupo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
@@ -22,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Controller
@@ -139,12 +141,22 @@ public class Receiver {
         String body = new String(bytes);
         String[] parts = body.split(":::");
         String from = parts[0];
-        String text = "";
+        String text = "chat:::";
         for(int i = 1; i< parts.length; i++){
             text += parts[i];
         }
         final String time = new SimpleDateFormat("HH:mm").format(new Date());
         simpMessagingTemplate.convertAndSend(destination,
                 new OutputMessage(from, text, time));
+    }
+
+    public void showGroups(String grupos, String consumerQueue) throws Exception{
+        String destination = "/topic/" +  consumerQueue;
+        final String time = new SimpleDateFormat("HH:mm").format(new Date());
+        String text = "showGroups:::";
+        text = text.concat(grupos);
+        text = text.substring(0, text.length() - 1);
+        simpMessagingTemplate.convertAndSend(destination,
+                new OutputMessage(consumerQueue, text, time));
     }
 }

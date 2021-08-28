@@ -32,7 +32,7 @@ public class FileDBGrupo {
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
             CascadeType.ALL
-    }, fetch = FetchType.LAZY)
+    }, fetch = FetchType.EAGER)
     @JoinTable(name = "usuarios_grupos",
             joinColumns = @JoinColumn(name = "grupos_id"),
             inverseJoinColumns = @JoinColumn(name = "usuarios_id")
@@ -93,7 +93,7 @@ public class FileDBGrupo {
 
     @Override
     public String toString() {
-        return "Usuario{" + "id=" + this.id + ", name='" + this.name + '\'' + ", Grupo='" + this.name + '\'' + '}';
+        return "Grupo{" + "id=" + this.id + ", name='" + this.name + '\'' + ", Grupo='" + this.name + '\'' + '}';
     }
 
 

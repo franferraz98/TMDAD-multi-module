@@ -1,5 +1,7 @@
 package com.example.multimodule.application;
 
+import com.example.multimodule.fileupload.FileController;
+import com.example.multimodule.fileupload.FileDBGrupo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @Controller
@@ -22,6 +25,9 @@ public class ChatController {
     @Autowired
     private Receiver receiver;
 
+    @Autowired
+    private FileController fileController;
+
     public ChatController(SimpMessagingTemplate simpMessagingTemplate) {
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
@@ -33,6 +39,7 @@ public class ChatController {
         String body = jsonMessage.getText();
         String[] parts = body.split("---");
         String type = parts[0];
+        int b;
 
         String text = "";
         for(int i = 1; i< parts.length; i++){
@@ -55,13 +62,47 @@ public class ChatController {
                 receiver.createNotifications(new JsonMessage(jsonMessage.getFrom(), text));
                 break;
             case "addToRoom":
-                receiver.addToRoom(new JsonMessage(jsonMessage.getFrom(), text));
+                text = text.replace(":::", "&");
+                b = fileController.newUserinGroupSpring(jsonMessage.getFrom() + "&" + text);
+                switch (b){
+                    case 1:
+                        System.err.println("Only the administrator can add users");
+                        break;
+                    case 2:
+                        System.err.println("Group does already exist");
+                        break;
+                    case 3:
+                        System.err.println("User does not exist");
+                        break;
+                    case 4:
+                        System.err.println("Exception on DB");
+                        break;
+                    default:
+                        receiver.addToRoom(new JsonMessage(jsonMessage.getFrom(), text));
+                }
                 break;
             case "createRoom":
-                receiver.createChatRoom(new JsonMessage(jsonMessage.getFrom(), text));
+                b = fileController.newGroupSpring(jsonMessage.getFrom() + "&" + text);
+                switch (b) {
+                    case 1:
+                        System.err.println("Group does already exist");
+                        break;
+                    case 2:
+                        System.err.println("User does not exist");
+                        break;
+                    case 3:
+                        System.err.println("Exception in DB");
+                        break;
+                    default:
+                        receiver.createChatRoom(new JsonMessage(jsonMessage.getFrom(), text));
+                }
                 break;
             case "route":
                 receiver.newBind(new JsonMessage(jsonMessage.getFrom(), text));
+                break;
+            case "showGroups":
+                String grupos = fileController.getGroupsSpring(jsonMessage.getFrom());
+                receiver.showGroups(grupos, jsonMessage.getFrom());
                 break;
             default:
                 // Error

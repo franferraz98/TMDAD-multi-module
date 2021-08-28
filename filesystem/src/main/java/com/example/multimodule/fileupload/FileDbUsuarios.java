@@ -28,7 +28,7 @@ public class FileDbUsuarios {
     }
 
     @JsonView(Views.Groups.class)
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "Pertenece")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "Pertenece")
     private Set<FileDBGrupo> gruposSet = new HashSet<>();
 
         private String Contraseña;
@@ -80,7 +80,7 @@ public class FileDbUsuarios {
 
     @Override
     public String toString() {
-        return "{" + "\"id\":\"" + this.id + "\", \"name\":\"" + this.name + "\"" + ", \"Grupo\":\"" + "\"" + "}";
+        return "id: " + id;
     }
 
     public String getContraseña() {

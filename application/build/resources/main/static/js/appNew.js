@@ -107,6 +107,7 @@ function connectToMain() {
 function connectInfo() {
     instantConnect();
 
+    /*
     var req = new XMLHttpRequest();
     var username = sessionStorage.getItem("username");
     req.open('GET', 'http://localhost:8080/getGroups/' + username, false);
@@ -115,20 +116,7 @@ function connectInfo() {
         var json = JSON.parse(req.responseText);
         console.log(json);
 
-        /*
-        var response = document.getElementById('response');
-        var p = document.createElement('tr');
 
-        for (var i = 0; i < json.length; i++){
-            var obj = json[i];
-            // p.style.wordWrap = 'break-word';
-            p.appendChild(document.createDocumentFragment("<td><span th:text=" + obj.name + "></span></td>"));
-            var url = "http://localhost:8080/group/" + obj.name;
-            p.appendChild(document.createDocumentFragment("<td><a th:href=" + url + "><span th:text=" + url + "></span></a></td>"));
-        }
-
-        response.appendChild(p);
-        */
 
         let text = "<table border='1'>"
         for (let x in json) {
@@ -141,7 +129,14 @@ function connectInfo() {
     } else {
         // TODO: Presentar excepcion
     }
+    */
+}
 
+function showGroups() {
+    var username = sessionStorage.getItem("username");
+    var text = 'showGroups---';
+    text = text.concat(username);
+    stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
 }
 
 function disconnect() {
@@ -158,6 +153,11 @@ function createRoom() {
     var username = sessionStorage.getItem("username");
     var chatRoom = document.getElementById('chatRoom').value;
 
+    var text = 'createRoom---';
+    text = text.concat(document.getElementById('chatRoom').value);
+    stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
+
+    /*
     var req = new XMLHttpRequest();
     var msg = username;
     msg = msg.concat("&");
@@ -174,14 +174,24 @@ function createRoom() {
     } else {
         // TODO: Presentar excepcion
     }
+     */
 }
 
 function addToRoom(activePage) {
     var UserRoom = document.getElementById("userToRoom").value;
     var username = sessionStorage.getItem("username");
     var groupname = activePage.replace('group/', '');
+
+    var from = document.getElementById('from').value;
+    var text = 'addToRoom---';
+    text = text.concat(groupname);
+    text = text.concat(':::');
+    text = text.concat(UserRoom);
+    stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
+
     // console.log(groupname);
 
+    /*
     var req = new XMLHttpRequest();
     var msg = groupname;
     msg = msg.concat("&");
@@ -203,6 +213,8 @@ function addToRoom(activePage) {
     } else {
         // TODO: Presentar excepcion
     }
+
+     */
 }
 
 function sendMessage() {
@@ -250,43 +262,35 @@ function sendToRoom(activePage) {
     stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
 }
 
-function showMyGroups(){
-
-    var req = new XMLHttpRequest();
-    req.open('GET', 'http://localhost:8080/Usuarios/get/' + username, false);
-    req.send(null);
-    console.log(req.status);
-    if (req.status == 200)
-      console.log(req.responseText);
-
-    var jsn = JSON.parse(req.responseText);
-    var groupName = jsn.Grupo
-
-    // TODO: Recuperar grupo mediante el nombre y conseguir la URL
-
-    /*
-    var groups = document.getElementById('groups');
-    var p = document.createElement('p');
-    p.style.wordWrap = 'break-word';
-    p.appendChild(document.createTextNode(messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")"));
-    response.appendChild(p);
-    */
-}
-
 function showMessageOutput(messageOutput) {
-    var response = document.getElementById('response');
-    var p = document.createElement('p');
-    p.style.wordWrap = 'break-word';
-    p.appendChild(document.createTextNode(messageOutput.from + ": " + messageOutput.text + " (" + messageOutput.time + ")"));
-    response.appendChild(p);
+    let mO = messageOutput.text.toString();
+    let parts = mO.split(":::");
+    console.log(messageOutput);
+    console.log(mO);
+    console.log(parts);
+    if(parts[0] === "chat"){
+        var response = document.getElementById('response');
+        var p = document.createElement('p');
+        p.style.wordWrap = 'break-word';
+        p.appendChild(document.createTextNode(messageOutput.from + ": " + parts[1] + " (" + messageOutput.time + ")"));
+        response.appendChild(p);
+    } else if (parts[0] === "showGroups"){
+        console.log(parts[1]);
+        var json = parts[1].split(";");
+
+        let text = "<table border='1'>"
+        json.forEach(myFunction)
+        text += "</table>"
+        document.getElementById("response").innerHTML = text;
+
+        function myFunction(value, index, array) {
+            let url = "http://localhost:8080/group/" + value;
+            text += "<tr><td>" + value + "</td>" + "<td><a href=\ " + url + ">" + url + "</td></a><tr/>";
+        }
+
+    } else{
+        // Movidas
+    }
+
+
 }
-/*
-$(function () {
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendMessage(); });
-});
-*/

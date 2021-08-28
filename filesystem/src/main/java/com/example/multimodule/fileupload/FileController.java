@@ -177,6 +177,48 @@
             return assembler.toModel(Usuario);
         }
 
+        public int newUserinGroupSpring(String body) {
+            String parts[] = body.split("&");
+            String groupname = parts[0];
+            String newmemberName = parts[1];
+            String from = parts[2];
+
+            System.out.println(groupname);
+            List<FileDbUsuarios> Usuario = repository.findByName(groupname);
+
+            String message = "";
+            FileDBGrupo G = null;
+            try {
+                if (repository.findByName(groupname).isEmpty()) {
+                    if (repositoryGrupo.findByName(newmemberName).isEmpty()) {
+                        List<FileDBGrupo> all = repositoryGrupo.findByName(groupname);
+                        FileDBGrupo group = all.get(0);
+                        Set<FileDbUsuarios> usuarios = group.getPertenece();
+                        Iterator<FileDbUsuarios> iter = usuarios.iterator();
+                        FileDbUsuarios usuario = iter.next();
+                        System.out.println(usuario);
+                        if (usuario.getName().equals(from)) {
+                            G = repositoryGrupo.findByName(groupname).get(0);
+                            G.addMember(repository.findByName(newmemberName).get(0));
+                            repositoryGrupo.save(G);
+                            return 0;
+                        } else {
+                            message = "Only the administrator can add users";
+                            return 1;
+                        }
+                    } else {
+                        message = "Group " + newmemberName + "does already exist";
+                        return 2;
+                    }
+                } else {
+                    message = "User " + groupname + "does not exist";
+                    return 3;
+                }
+            } catch (Exception e) {
+                return 4;
+            }
+        }
+
         @PostMapping("/Grupos/addToGroup")
         ResponseEntity<ResponseMessage> newUserinGroup(@RequestBody String body) {
             String parts[] = body.split("&");
@@ -256,18 +298,35 @@
             return l;
         }
 
-        /*
-        @JsonView(Views.Summary.class)
-        @GetMapping("/Grupos")
-        CollectionModel<EntityModel<FileDBGrupo>> allGroup() {
+        public int newGroupSpring(String body){
+            String parts[] = body.split("&");
+            String username = parts[0];
+            String groupName = parts[1];
 
-            List<EntityModel<FileDBGrupo>> grupos = repositoryGrupo.findAll().stream()
-                    .map(assemblerGrupo::toModel)
-                    .collect(Collectors.toList());
-
-            return CollectionModel.of(grupos, linkTo(methodOn(FileController.class).all()).withSelfRel());
+            String message = "";
+            ArrayList<FileDbUsuarios> ListaMiembros = null;
+            FileDbUsuarios U;
+            FileDBGrupo G;
+            try {
+                if (!repository.findByName(username).isEmpty()) {
+                    if (repositoryGrupo.findByName(groupName).isEmpty()) {
+                        G = repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName));
+                        U = repository.findByName(username).get(0);
+                        G.getPertenece().add(U);
+                        repositoryGrupo.save(G);
+                        return 0;
+                    } else {
+                        message = "Group " + groupName + "does already exist";
+                        return 1;
+                    }
+                } else {
+                    message = "User " + username + "does not exist";
+                    return 2;
+                }
+            } catch (Exception e) {
+                return 3;
+            }
         }
-         */
 
         @PostMapping("/Grupos")
         ResponseEntity<ResponseMessage> newGroup(@RequestBody String body) {
@@ -285,6 +344,8 @@
                         G = repositoryGrupo.save(new FileDBGrupo(groupName, "", groupName));
                         U = repository.findByName(username).get(0);
                         G.getPertenece().add(U);
+                        U.getGruposSet().add(G);
+                        repository.save(U);
                         repositoryGrupo.save(G);
                         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
                     } else {
@@ -308,6 +369,23 @@
             Set<FileDBGrupo> grupos = usuario.getGruposSet();
 
             return grupos;
+        }
+
+        @JsonView(Views.Groups.class)
+        public String getGroupsSpring(String username) {
+
+            FileDbUsuarios usuario = repository.findByName(username).get(0);
+
+            Set<FileDBGrupo> grupos = usuario.getGruposSet();
+            Iterator<FileDBGrupo> iter = grupos.iterator();
+            String result = "";
+
+            for(int i = 0; i<grupos.size(); i++){
+                FileDBGrupo g = iter.next();
+                result = result.concat(g.getName() + ";");
+            }
+
+            return result;
         }
 
         @RequestMapping("/Grupos/{name}/{name2}")
