@@ -198,12 +198,11 @@ function addToRoom(activePage) {
     var username = sessionStorage.getItem("username");
     var groupname = activePage.replace('group/', '');
 
-    var from = document.getElementById('from').value;
     var text = 'addToRoom---';
     text = text.concat(groupname);
     text = text.concat(':::');
     text = text.concat(UserRoom);
-    stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
+    stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
 
     // console.log(groupname);
 

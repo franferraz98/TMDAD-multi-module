@@ -43,7 +43,9 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
-    implementation 'postgresql:postgresql:9.1-901.jdbc4'
+    //implementation 'postgresql:postgresql:9.3-1100.jdbc4'
+    // implementation 'org.postgresql:postgresql'
+    implementation 'org.postgresql:postgresql:42.2.18.jre7'
 }
 
 

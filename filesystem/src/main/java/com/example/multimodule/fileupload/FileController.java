@@ -227,6 +227,7 @@
         }
 
         public int newUserinGroupSpring(String body) {
+            System.out.println(body);
             String parts[] = body.split("&");
             String groupname = parts[0];
             String newmemberName = parts[1];
@@ -238,8 +239,8 @@
             String message = "";
             FileDBGrupo G = null;
             try {
-                if (repository.findByName(groupname).isEmpty()) {
-                    if (repositoryGrupo.findByName(newmemberName).isEmpty()) {
+                if (!repository.findByName(newmemberName).isEmpty()) {
+                    if (!repositoryGrupo.findByName(groupname).isEmpty()) {
                         List<FileDBGrupo> all = repositoryGrupo.findByName(groupname);
                         FileDBGrupo group = all.get(0);
                         Set<FileDbUsuarios> usuarios = group.getPertenece();
@@ -256,11 +257,11 @@
                             return 1;
                         }
                     } else {
-                        message = "Group " + newmemberName + "does already exist";
+                        message = "Group " + groupname + "doesn't exist";
                         return 2;
                     }
                 } else {
-                    message = "User " + groupname + "does not exist";
+                    message = "User " + newmemberName + "does not exist";
                     return 3;
                 }
             } catch (Exception e) {

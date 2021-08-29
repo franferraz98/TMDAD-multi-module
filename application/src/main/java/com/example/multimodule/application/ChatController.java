@@ -45,6 +45,7 @@ public class ChatController {
         for(int i = 1; i< parts.length; i++){
             text += parts[i];
         }
+        String textpre = text;
 
         final String time = new SimpleDateFormat("HH:mm").format(new Date());
 
@@ -63,7 +64,8 @@ public class ChatController {
                 break;
             case "addToRoom":
                 text = text.replace(":::", "&");
-                b = fileController.newUserinGroupSpring(jsonMessage.getFrom() + "&" + text);
+                text = text + "&" + jsonMessage.getFrom();
+                b = fileController.newUserinGroupSpring(text);
                 switch (b){
                     case 1:
                         System.err.println("Only the administrator can add users");
@@ -78,7 +80,7 @@ public class ChatController {
                         System.err.println("Exception on DB");
                         break;
                     default:
-                        receiver.addToRoom(new JsonMessage(jsonMessage.getFrom(), text));
+                        receiver.addToRoom(new JsonMessage(jsonMessage.getFrom(), textpre));
                 }
                 break;
             case "createRoom":
