@@ -9,8 +9,8 @@ function wait(ms){
 }
 
 function setConnected(connected) {
-    $("#connect").prop("disabled", connected);
-    $("#disconnect").prop("disabled", !connected);
+    $("#connectBtn").prop("disabled", connected);
+    $("#disconnectBtn").prop("disabled", !connected);
     if (connected) {
         $("#conversation").show();
     }
@@ -77,6 +77,7 @@ function instantConnect() {
             text = text.concat(username);
             stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
             console.log('Sent');
+            setConnected(true);
         });
     }
 }
@@ -110,6 +111,7 @@ function connectToMain() {
         text = text.concat(username);
         stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
         console.log('Sent');
+        setConnected(true);
     });
 }
 
@@ -233,10 +235,7 @@ function addToRoom(activePage) {
 }
 
 function sendMessage() {
-    var from = document.getElementById('from').value;
-    if(from == ""){
-        from = username;
-    }
+    var from = sessionStorage.getItem("username");
     var text = 'chat---';
     text = text.concat(document.getElementById('text').value);
     text = text.concat(':::');

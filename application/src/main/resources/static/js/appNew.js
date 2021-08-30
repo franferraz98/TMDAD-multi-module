@@ -1,16 +1,8 @@
 var stompClient = null;
 
-function wait(ms){
-   var start = new Date().getTime();
-   var end = start;
-   while(end < start + ms) {
-     end = new Date().getTime();
-  }
-}
-
 function setConnected(connected) {
-    $("#connect").prop("disabled", connected);
-    $("#disconnect").prop("disabled", !connected);
+    $("#connectBtn").prop("disabled", connected);
+    $("#disconnectBtn").prop("disabled", !connected);
     if (connected) {
         $("#conversation").show();
     }
@@ -54,34 +46,6 @@ function connect() {
      */
 }
 
-function instantConnect() {
-    var aux = sessionStorage.getItem("username");
-    if (aux) {
-        var socket = new SockJS('/client');
-        stompClient = Stomp.over(socket);
-        stompClient.connect({}, function (frame) {
-            setConnected(true);
-            console.log('Connected to main: ' + frame);
-            console.log("Instant correcto");
-            console.log(aux);
-            username = aux;
-            var topic = '/topic/';
-            topic = topic.concat(username);
-            console.log('Connected: ' + frame);
-            console.log(topic);
-            stompClient.subscribe(topic, function(message) {
-                showMessageOutput(JSON.parse(message.body));
-            });
-            console.log('Subscribed to queue');
-            var text = 'route---';
-            text = text.concat(username);
-            stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
-            console.log('Sent');
-        });
-    }
-}
-
-
 function connectToMain() {
     var aux = sessionStorage.getItem("username");
     console.log(aux)
@@ -110,7 +74,46 @@ function connectToMain() {
         text = text.concat(username);
         stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
         console.log('Sent');
+        setConnected(true);
     });
+}
+
+function instantConnect() {
+    var aux = sessionStorage.getItem("username");
+    if (aux) {
+        var socket = new SockJS('/client');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            setConnected(true);
+            console.log('Connected to main: ' + frame);
+            console.log("Instant correcto");
+            console.log(aux);
+            username = aux;
+            var topic = '/topic/';
+            topic = topic.concat(username);
+            console.log('Connected: ' + frame);
+            console.log(topic);
+            stompClient.subscribe(topic, function(message) {
+                showMessageOutput(JSON.parse(message.body));
+            });
+            console.log('Subscribed to queue');
+            var text = 'route---';
+            text = text.concat(username);
+            stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
+            console.log('Sent');
+            setConnected(true);
+        });
+    }
+}
+
+function disconnect() {
+    if (stompClient !== null) {
+        stompClient.disconnect();
+    }
+
+    setConnected(false);
+    sessionStorage.removeItem("username");
+    console.log("Disconnected");
 }
 
 function signup() {
@@ -153,16 +156,6 @@ function showGroups() {
     var text = 'showGroups---';
     text = text.concat(username);
     stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
-}
-
-function disconnect() {
-    if (stompClient !== null) {
-        stompClient.disconnect();
-    }
-
-    setConnected(false);
-    sessionStorage.removeItem("username");
-    console.log("Disconnected");
 }
 
 function createRoom() {
@@ -233,10 +226,7 @@ function addToRoom(activePage) {
 }
 
 function sendMessage() {
-    var from = document.getElementById('from').value;
-    if(from == ""){
-        from = username;
-    }
+    var from = sessionStorage.getItem("username");
     var text = 'chat---';
     text = text.concat(document.getElementById('text').value);
     text = text.concat(':::');
@@ -305,6 +295,4 @@ function showMessageOutput(messageOutput) {
     } else{
         // Movidas
     }
-
-
 }

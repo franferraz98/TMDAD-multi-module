@@ -23,8 +23,7 @@
     enabled. Please enable
     Javascript and reload this page!</h2></noscript>
 
-<p>
-    <br />
+    <!--br />
     <div>
         <input type="text" id="from" placeholder="Choose a nickname"/>
     </div>
@@ -34,7 +33,7 @@
         <button id="connect" onclick="connectToMain();">Connect</button>
         <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
         <button id="subscribe" disabled="disabled" onclick="subscribe();">Subscribe</button>
-    </div>
+    </div-->
     <br />
     <div id="addToRoomDiv">
         <script th:inline="javascript">
@@ -45,7 +44,7 @@
     </div>
     <br />
     <div id="converRoomDiv">
-        <input type="text" id="textRoom" placeholder="Write a message..."/>
+        <textarea rows = "5" cols = "60" id="textRoom" placeholder="Write a message..."></textarea>
         <button id="sendToRoom" onclick="sendToRoom(aP);">Send</button>
     </div>
     <br />
