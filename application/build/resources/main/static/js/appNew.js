@@ -1,13 +1,5 @@
 var stompClient = null;
 
-function wait(ms){
-   var start = new Date().getTime();
-   var end = start;
-   while(end < start + ms) {
-     end = new Date().getTime();
-  }
-}
-
 function setConnected(connected) {
     $("#connectBtn").prop("disabled", connected);
     $("#disconnectBtn").prop("disabled", !connected);
@@ -54,35 +46,6 @@ function connect() {
      */
 }
 
-function instantConnect() {
-    var aux = sessionStorage.getItem("username");
-    if (aux) {
-        var socket = new SockJS('/client');
-        stompClient = Stomp.over(socket);
-        stompClient.connect({}, function (frame) {
-            setConnected(true);
-            console.log('Connected to main: ' + frame);
-            console.log("Instant correcto");
-            console.log(aux);
-            username = aux;
-            var topic = '/topic/';
-            topic = topic.concat(username);
-            console.log('Connected: ' + frame);
-            console.log(topic);
-            stompClient.subscribe(topic, function(message) {
-                showMessageOutput(JSON.parse(message.body));
-            });
-            console.log('Subscribed to queue');
-            var text = 'route---';
-            text = text.concat(username);
-            stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
-            console.log('Sent');
-            setConnected(true);
-        });
-    }
-}
-
-
 function connectToMain() {
     var aux = sessionStorage.getItem("username");
     console.log(aux)
@@ -113,6 +76,44 @@ function connectToMain() {
         console.log('Sent');
         setConnected(true);
     });
+}
+
+function instantConnect() {
+    var aux = sessionStorage.getItem("username");
+    if (aux) {
+        var socket = new SockJS('/client');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            setConnected(true);
+            console.log('Connected to main: ' + frame);
+            console.log("Instant correcto");
+            console.log(aux);
+            username = aux;
+            var topic = '/topic/';
+            topic = topic.concat(username);
+            console.log('Connected: ' + frame);
+            console.log(topic);
+            stompClient.subscribe(topic, function(message) {
+                showMessageOutput(JSON.parse(message.body));
+            });
+            console.log('Subscribed to queue');
+            var text = 'route---';
+            text = text.concat(username);
+            stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
+            console.log('Sent');
+            setConnected(true);
+        });
+    }
+}
+
+function disconnect() {
+    if (stompClient !== null) {
+        stompClient.disconnect();
+    }
+
+    setConnected(false);
+    sessionStorage.removeItem("username");
+    console.log("Disconnected");
 }
 
 function signup() {
@@ -155,16 +156,6 @@ function showGroups() {
     var text = 'showGroups---';
     text = text.concat(username);
     stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
-}
-
-function disconnect() {
-    if (stompClient !== null) {
-        stompClient.disconnect();
-    }
-
-    setConnected(false);
-    sessionStorage.removeItem("username");
-    console.log("Disconnected");
 }
 
 function createRoom() {
@@ -248,7 +239,7 @@ function sendToRoom(activePage) {
     var req = new XMLHttpRequest();
     var username = sessionStorage.getItem("username");
 
-    var from = document.getElementById('from').value;
+    var from = username
     if(from == ""){
         from = username;
     }
@@ -280,11 +271,32 @@ function showMessageOutput(messageOutput) {
     let mO = messageOutput.text.toString();
     let parts = mO.split(":::");
     if(parts[0] === "chat"){
-        var response = document.getElementById('response');
-        var p = document.createElement('p');
-        p.style.wordWrap = 'break-word';
-        p.appendChild(document.createTextNode(messageOutput.from + ": " + parts[1] + " (" + messageOutput.time + ")"));
-        response.appendChild(p);
+        let ttcheck = parts[1].split("+++");
+        if(ttcheck.length === 1){
+            var response = document.getElementById('response');
+            var p = document.createElement('p');
+            p.style.wordWrap = 'break-word';
+            p.appendChild(document.createTextNode(messageOutput.from + ": " + parts[1] + " (" + messageOutput.time + ")"));
+            response.appendChild(p);
+        } else {
+            let ref = window.location.href;
+            let aP = ref.split("/");
+            if(aP[aP.length-1] === "trendingtopics"){
+                let json = ttcheck[0].split(",");
+                let text = "<table>"
+                json.forEach(myFunction2)
+                text += "</table>"
+                document.getElementById("response").innerHTML = text;
+                function myFunction2(value, index, array) {
+                    value = value.replace('{', '');
+                    value = value.replace('}', '');
+                    value = value.replace('\"','');
+                    value = value.replace('\"','');
+                    let aux = value.split(":");
+                    text += "<tr><td>" + aux[0] + "</td>" + "<td>" + aux[1] + "</td></a><tr/>";
+                }
+            }
+        }
     } else if (parts[0] === "showGroups"){
         console.log(parts[1]);
         var json = parts[1].split(";");
@@ -304,6 +316,4 @@ function showMessageOutput(messageOutput) {
     } else{
         // Movidas
     }
-
-
 }

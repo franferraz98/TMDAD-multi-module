@@ -1,5 +1,17 @@
 var stompClientAdmin = null;
 
+function setConnectedAdmin(connected) {
+    $("#connectAdmin").prop("disabled", connected);
+    $("#disconnectAdmin").prop("disabled", !connected);
+    if (connected) {
+        $("#conversation").show();
+    }
+    else {
+        $("#conversation").hide();
+    }
+    $("#greetings").html("");
+}
+
 function connectToAdmin() {
     // Connect to notification publisher
     var socket = new SockJS('/client');
@@ -8,8 +20,13 @@ function connectToAdmin() {
     var result = password.localeCompare('admin');
     if (password == 'admin') {
         stompClientAdmin.connect({}, function(frame) {
-                console.log('Connected to admin: ' + frame);
+            console.log('Connected to admin: ' + frame);
+            var from = 'notification';
+            var text = 'notifications---';
+            stompClientAdmin.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
         });
+        setConnectedAdmin(true);
+
     }
 }
 
@@ -18,12 +35,7 @@ function disconnectAdmin() {
         stompClientAdmin.disconnect();
     }
     console.log("Disconnected Admin")
-}
-
-function subscribeAdmin(){
-    var from = 'notification';
-    var text = 'notifications---';
-    stompClientAdmin.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
+    setConnectedAdmin(false);
 }
 
 function sendNotification() {

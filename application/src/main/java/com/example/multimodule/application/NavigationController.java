@@ -71,40 +71,17 @@ public class NavigationController {
 
         model.addAttribute("activePage", "groups");
 
-        /*
-        try {
-            URL url = new URL("http://localhost:8080/getGroups");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            Map<String, String> parameters = new HashMap<>();
-            parameters.put("username", username);
-
-            con.setDoOutput(true);
-            DataOutputStream out = new DataOutputStream(con.getOutputStream());
-            out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
-            out.flush();
-            out.close();
-
-            String response =  con.getResponseMessage();
-            System.out.println(response);
-        } catch (Exception e){
-            System.err.println("Failed to access DB... " + e);
-        }
-
-        List<FileDBGrupo> lista = fileController.getGroups(username);
-        List<GroupSimulator> l = new ArrayList<GroupSimulator>();
-        for(int i = 0; i<lista.size(); i++){
-            String name = lista.get(i).getName();
-            String url = "http://localhost:8080/group/" + name;
-            l.add( new GroupSimulator(name, url) );
-        }
-
-        model.addAttribute("groups", l);
-
-         */
         List<GroupSimulator> l = new ArrayList<GroupSimulator>();
         model.addAttribute("groups", l);
         return "info";
+    }
+
+    @GetMapping("/trendingtopics")
+    public String getTT(Model model, @RequestParam(value = "from", required = false) String from,
+                          @RequestParam(value = "username", required = false) String username){
+
+        model.addAttribute("activePage", "trendingtopics");
+        return "trendingtopics";
     }
 
     @GetMapping("/group/{id}")

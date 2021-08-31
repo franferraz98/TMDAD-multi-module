@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/TMDAD-multi-module.iml" filepath="$PROJECT_DIR$/TMDAD-multi-module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/trendingTopics.iml" filepath="$PROJECT_DIR$/trendingTopics.iml" />
+    </modules>
+  </component>
+</project>

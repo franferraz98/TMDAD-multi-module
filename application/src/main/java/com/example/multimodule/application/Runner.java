@@ -1,5 +1,6 @@
 package com.example.multimodule.application;
 
+import io.micrometer.core.annotation.Timed;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -23,7 +24,7 @@ public class Runner {
     }
 
     public void run(String message) throws Exception {
-        System.out.println("Sending message: <" + message + ">");
+        // System.out.println("Sending message: <" + message + ">");
         String[] parts = message.split(":::");
         String destination = "foo.bar." + parts[parts.length - 1];
         String text = parts[0] + ":::";
@@ -35,8 +36,9 @@ public class Runner {
         rabbitTemplate.convertAndSend("spring-boot-exchange", destination, msg);
     }
 
+    @Timed("Chat_Message.ammount")
     public void toChatRoom(String message) throws Exception {
-        System.out.println("Sending message: <" + message + "> to a room");
+        // System.out.println("Sending message: <" + message + "> to a room");
         String[] parts = message.split(":::");
         String exchange = parts[parts.length - 1];
         String text = parts[0] + ":::";
@@ -49,7 +51,7 @@ public class Runner {
     }
 
     public void notify(String message) throws Exception {
-        System.out.println("Sending message: <" + message + "> to everyone");
+        // System.out.println("Sending message: <" + message + "> to everyone");
         String[] parts = message.split(":::");
         String exchange = "notifications";
         String text = parts[0] + ":::";

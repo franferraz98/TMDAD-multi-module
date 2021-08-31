@@ -14,11 +14,11 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	// implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	implementation project(':library')
+	// implementation project(':trendingtopics')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'android.arch.persistence.room:runtime:1.1.1'
@@ -43,14 +43,11 @@ dependencies {
 	implementation group: 'org.springframework', name: 'spring-context', version: '5.3.7'
 	implementation project(':filesystem')
 
-	// implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-	// implementation 'org.springframework.boot:spring-boot-starter-security'
-	// implementation 'org.springframework.security:spring-security-test'
-	implementation 'com.wavefront:wavefront-spring-boot-starter'
-	implementation 'io.micrometer:micrometer-registry-prometheus:latest.release'
 	implementation 'io.micrometer:micrometer-registry-wavefront:latest.release'
-	//implementation 'postgresql:postgresql:9.3-1100.jdbc4'
-	// implementation 'org.postgresql:postgresql'
+	implementation 'io.micrometer:micrometer-core:latest.integration'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:latest.release'
+	implementation 'com.wavefront:wavefront-spring-boot-starter:2.1.1'
+
 	implementation 'org.postgresql:postgresql:42.2.18.jre7'
 }
 

@@ -12,6 +12,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -44,6 +45,7 @@ public class Receiver {
     private RabbitAdmin rabbitAdmin;
 
     @Autowired
+    @Qualifier("Server")
     private SimpleMessageListenerContainer listenerContainer;
 
     public Receiver(SimpMessagingTemplate simpMessagingTemplate) {
@@ -60,16 +62,22 @@ public class Receiver {
 
         rabbitAdmin.declareExchange(exchange);
         for(int i = 0; i<allQueueNames.size(); i++) {
-            Queue queue = new Queue(allQueueNames.get(i), true);
-            Binding binding = BindingBuilder.bind(queue).to(exchange); //TODO: No se yo
-            rabbitAdmin.declareBinding(binding);
+            if(!allQueueNames.get(i).equals("trending-topics-in")){
+                Queue queue = new Queue(allQueueNames.get(i), true);
+                Binding binding = BindingBuilder.bind(queue).to(exchange); //TODO: No se yo
+                rabbitAdmin.declareBinding(binding);
+            }
         }
+        /*
+        Binding binding = BindingBuilder.bind("queueInTT").to(exchange);
+        rabbitAdmin.declareBinding(binding);
+         */
     }
 
     @MessageMapping("/addToRoom")
     public void addToRoom (final JsonMessage jsonMessage){
         String text = jsonMessage.getText();
-        System.out.println(text);
+        // System.out.println(text);
         String[] parts = text.split(":::");
         String room = parts[0];
         String user = parts[1];
@@ -93,9 +101,13 @@ public class Receiver {
         Queue queue = new Queue(queueName, true);
         Binding binding = BindingBuilder.bind(queue).to(exchange); //TODO: No se yo
 
+        Queue queueTT = new Queue("trending-topics-in", true);
+        Binding bindingTT = BindingBuilder.bind(queueTT).to(exchange);
+
         rabbitAdmin.declareExchange(exchange);
         // rabbitAdmin.declareQueue(queue);
         rabbitAdmin.declareBinding(binding);
+        rabbitAdmin.declareBinding(bindingTT);
     }
 
     @MessageMapping("/route")
@@ -105,10 +117,25 @@ public class Receiver {
         logger.debug("Queue: " + queueName);
         allQueueNames.add(queueName);
         String keyMask = "foo.bar." + jsonMessage.getText();
-        org.springframework.amqp.core.Queue queue = new org.springframework.amqp.core.Queue(queueName, true);
+        Queue queue = new Queue(queueName, true);
         Binding bind = BindingBuilder.bind(queue).to(exchange).with(keyMask);
         rabbitAdmin.declareQueue(queue);
         rabbitAdmin.declareBinding(bind);
+
+        /* NUEVO */
+        Queue queueTT = new Queue("trending-topics-in", true);
+        Binding bindTT = BindingBuilder.bind(queueTT).to(exchange).with(keyMask);
+        if(!allQueueNames.contains("trending-topics-in")){
+            allQueueNames.add("trending-topics-in");
+            rabbitAdmin.declareQueue(queueTT);
+        }
+        rabbitAdmin.declareBinding(bindTT);
+
+        FanoutExchange admin = new FanoutExchange("notifications");
+        Binding bindingAdmin = BindingBuilder.bind(queue).to(admin);
+        rabbitAdmin.declareBinding(bindingAdmin);
+
+        /* --------- */
 
         RabbitTemplate rabbitTemplate = rabbitAdmin.getRabbitTemplate();
         while(rabbitAdmin.getQueueInfo(queue.getName()).getMessageCount() > 0){
@@ -127,11 +154,14 @@ public class Receiver {
         }
 
         String[] namesArray = allQueueNames.toArray(new String[0]);
+        List<String> list = new ArrayList<String>(Arrays.asList(namesArray));
+        list.remove("trending-topics-in");
+        namesArray = list.toArray(new String[0]);
         listenerContainer.setQueueNames(namesArray);
     }
 
     public void receiveMessage(Message message) throws Exception {
-        System.out.println("Received <" + message.toString() + ">");
+        // System.out.println("Received <" + message.toString() + ">");
         MessageProperties properties = message.getMessageProperties();
         String consumerQueue = properties.getConsumerQueue();
         // String receivedExchange = properties.getReceivedExchange(); TODO: Anyadir esto
@@ -151,21 +181,6 @@ public class Receiver {
     }
 
     public void showGroups(String grupos, String consumerQueue) throws Exception{
-        /*
-        Enumeration<NetworkInterface> enu = NetworkInterface.getNetworkInterfaces();
-        Iterator<NetworkInterface> iter =  enu.asIterator();
-        while(iter.hasNext()){
-            NetworkInterface net = iter.next();
-            Enumeration<InetAddress> enu2 = net.getInetAddresses();
-            Iterator<InetAddress> iter2 = enu2.asIterator();
-            while(iter2.hasNext()){
-                InetAddress addr = iter2.next();
-                String addrNum = addr.toString();
-                System.out.println(addrNum);
-            }
-        }
-        String address;
-        */
 
         String destination = "/topic/" +  consumerQueue;
         final String time = new SimpleDateFormat("HH:mm").format(new Date());

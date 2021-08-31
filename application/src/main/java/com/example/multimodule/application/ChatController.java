@@ -34,7 +34,7 @@ public class ChatController {
 
     @MessageMapping("/client")
     public OutputMessage interpret(final JsonMessage jsonMessage) throws Exception {
-        System.out.println("Received: " + jsonMessage.getFrom() + " -> " + jsonMessage.getText());
+        // System.out.println("Received: " + jsonMessage.getFrom() + " -> " + jsonMessage.getText());
 
         String body = jsonMessage.getText();
         String[] parts = body.split("---");

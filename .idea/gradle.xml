@@ -14,7 +14,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/application" />
             <option value="$PROJECT_DIR$/filesystem" />
-            <option value="$PROJECT_DIR$/library" />
+            <option value="$PROJECT_DIR$/trendingtopics" />
           </set>
         </option>
       </GradleProjectSettings>

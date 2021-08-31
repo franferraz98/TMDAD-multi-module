@@ -1,0 +1,8 @@
+com/example/multimodule/service/MessagingRabbitmqApplication.java
+ com.example.multimodule.service.MessagingRabbitmqApplication
+com/example/multimodule/service/TTRunner.java
+ com.example.multimodule.service.TTRunner
+com/example/multimodule/service/TTReceiver.java
+ com.example.multimodule.service.TTReceiver
+com/example/multimodule/service/Calculator.java
+ com.example.multimodule.service.Calculator

@@ -26,6 +26,9 @@
         <module name="gs-multi-module.filesystem.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="gs-multi-module.trending-topics.main" target="11" />
+      <module name="gs-multi-module.trending-topics.test" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
