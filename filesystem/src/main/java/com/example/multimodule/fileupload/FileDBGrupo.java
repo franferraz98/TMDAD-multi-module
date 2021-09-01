@@ -40,6 +40,14 @@ public class FileDBGrupo {
     private Set<FileDbUsuarios> Pertenece = new HashSet<>();
 
 
+    public Set<Mensajes> getMensajesGrupo() {
+        return MensajesGrupo;
+    }
+
+    public void setMensajesGrupo(Set<Mensajes> mensajesGrupo) {
+        MensajesGrupo = mensajesGrupo;
+    }
+
     @JsonView(Views.Summary.class)
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
@@ -95,7 +103,6 @@ public class FileDBGrupo {
     public String toString() {
         return "Grupo{" + "id=" + this.id + ", name='" + this.name + '\'' + ", Grupo='" + this.name + '\'' + '}';
     }
-
 
     public String getListaColas() {
         return ListaColas;

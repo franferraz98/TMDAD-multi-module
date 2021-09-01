@@ -41,11 +41,22 @@
         </script>
         <input type="text" id="userToRoom" placeholder="Add a user to room..."/>
         <button id="addToRoom" th:onclick="addToRoom(aP);">Add to Room</button>
+        <button id="deleteFromRoom" th:onclick="deleteFromRoom(aP);">Delete From Room</button>
+    </div>
+    <div id="deleteRoomDib">
+        <script th:inline="javascript">
+            var aP = /*[[${activePage}]]*/;
+        </script>
+        <button id="deleteRoom" th:onclick="deleteRoom(aP);">Delete Room</button>
     </div>
     <br />
     <div id="converRoomDiv">
         <textarea rows = "5" cols = "60" id="textRoom" placeholder="Write a message..."></textarea>
         <button id="sendToRoom" onclick="sendToRoom(aP);">Send</button>
+    </div>
+    <br />
+    <div>
+        <button id="getMessages" onclick="getMessages(aP);">Get Previous Messages</button>
     </div>
     <br />
     <div><p id="response"></p></div>

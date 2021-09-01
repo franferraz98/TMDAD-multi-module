@@ -22,7 +22,9 @@ function connect() {
     msg = msg.concat(psw);
     console.log(msg);
     var req = new XMLHttpRequest();
-    req.open('POST', 'http://localhost:8080/Usuarios/login', false); //TODO: Comprobar URI
+    let ref = window.location.href;
+    let parts = ref.split("/login");
+    req.open('POST', parts[0] + '/Usuarios/login', false); //TODO: Comprobar URI
     req.onreadystatechange = function (aEvt) {
       if (req.readyState == 4) {
          if(req.status == 200) {
@@ -137,7 +139,9 @@ function signup() {
         msg = msg.concat("&");
         msg = msg.concat(psw);
         console.log(msg);
-        req.open('POST', 'http://localhost:8080/Usuarios', false);
+        let ref = window.location.href;
+        let parts = ref.split("/signup");
+        req.open('POST', parts[0] + '/Usuarios', false);
         req.send(msg);
         if (req.status == 200) {
             console.log("USUARIO CREADO");
@@ -196,33 +200,50 @@ function addToRoom(activePage) {
     text = text.concat(':::');
     text = text.concat(UserRoom);
     stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
+}
 
-    // console.log(groupname);
+function deleteFromRoom(activePage) {
+    var UserRoom = document.getElementById("userToRoom").value;
+    var username = sessionStorage.getItem("username");
+    var groupname = activePage.replace('group/', '');
 
-    /*
+    var text = 'deleteFromRoom---';
+    text = text.concat(groupname);
+    text = text.concat(':::');
+    text = text.concat(UserRoom);
+    stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
+}
+
+function deleteRoom(activePage) {
+    var username = sessionStorage.getItem("username");
+    var groupname = activePage.replace('group/', '');
+
+    var text = 'deleteRoom---';
+    text = text.concat(groupname);
+    stompClient.send("/app/client", {}, JSON.stringify({'from':username, 'text':text}));
+}
+
+function getMessages(activePage){
+    var groupname = activePage.replace('group/', '');
     var req = new XMLHttpRequest();
-    var msg = groupname;
-    msg = msg.concat("&");
-    msg = msg.concat(UserRoom);
-    msg = msg.concat("&")
-    msg = msg.concat(username);
-    // console.log(msg);
-    req.open('POST', 'http://localhost:8080/Grupos/addToGroup', false);
-    req.send(msg);
+    let ref = window.location.href;
+    let parts = ref.split("/group");
+    var url = parts[0] + '/getMessages/';
+    url = url.concat(groupname);
+    req.open('GET', url, false);
+    req.send();
     if (req.status == 200) {
-        console.log("Usuario AÑADIDO");
-
-        var from = document.getElementById('from').value;
-        var text = 'addToRoom---';
-        text = text.concat(groupname);
-        text = text.concat(':::');
-        text = text.concat(UserRoom);
-        stompClient.send("/app/client", {}, JSON.stringify({'from':from, 'text':text}));
-    } else {
-        // TODO: Presentar excepcion
+        // console.log(req.responseText);
+        let obj = JSON.parse(req.responseText);
+        obj.forEach(interpret);
+        function interpret(value, index, array) {
+            var response = document.getElementById('response');
+            var p = document.createElement('p');
+            p.style.wordWrap = 'break-word';
+            p.appendChild(document.createTextNode(value.username + ": " + value.content));
+            response.appendChild(p);
+        }
     }
-
-     */
 }
 
 function sendMessage() {
@@ -256,7 +277,9 @@ function sendToRoom(activePage) {
     msg = msg.concat(dest);
     msg = msg.concat("&");
     msg = msg.concat(document.getElementById('textRoom').value);
-    req.open('POST', 'http://localhost:8080/Mensajes', false);
+    let ref = window.location.href;
+    let parts = ref.split("/group");
+    req.open('POST', parts[0] + '/Mensajes', false);
     req.send(msg);
     if (req.status == 200) {
         console.log("Mesnaje guardado");
@@ -307,7 +330,9 @@ function showMessageOutput(messageOutput) {
         document.getElementById("response").innerHTML = text;
 
         function myFunction(value, index, array) {
-            let url = "http://localhost:8080/group/" + value;
+            let ref = window.location.href;
+            let parts = ref.split("/info");
+            let url = parts[0] + "/group/" + value;
             text += "<tr><td>" + value + "</td>" + "<td><a href=\ " + url + ">" + url + "</td></a><tr/>";
         }
     } else if(parts[0] === "login"){

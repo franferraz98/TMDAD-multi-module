@@ -83,6 +83,18 @@ public class ChatController {
                         receiver.addToRoom(new JsonMessage(jsonMessage.getFrom(), textpre));
                 }
                 break;
+            case "deleteFromRoom":
+                String[] partes = text.split(":::");
+                b = fileController.deleteUserFromGroupSpring(partes[0], partes[1]);
+                if(b == 0){
+                    receiver.removeFromRoom(new JsonMessage(jsonMessage.getFrom(), text));
+                }
+                break;
+            case "deleteRoom":
+                b = fileController.deleteGroup(jsonMessage.getFrom(), text);
+                //if(b == 0){
+                    receiver.deleteRoom(new JsonMessage(jsonMessage.getFrom(), text));
+                //}
             case "createRoom":
                 b = fileController.newGroupSpring(jsonMessage.getFrom() + "&" + text);
                 switch (b) {

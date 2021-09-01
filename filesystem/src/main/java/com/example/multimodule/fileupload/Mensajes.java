@@ -79,5 +79,10 @@ public class Mensajes {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "MensajesGrupo")
     private Set<FileDBGrupo> gruposMensaje = new HashSet<>();
 
+    @Override
+    public String toString() {
+        return "{" + "\"username\":\"" + this.userName + "\", \"content\":\"" + this.Content  + "\", \"reciever\":\"" + this.reciverName + '\"' + '}';
+    }
+
 
 }

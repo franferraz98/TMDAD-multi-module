@@ -31,6 +31,15 @@ public class Calculator {
 
     public String removeBuzzwords(String message){
         // Quitar las palabras poco interesantes
+        message = message.replace(",","");
+        message = message.replace(".","");
+        message = message.replace(";","");
+        message = message.replace("{","");
+        message = message.replace("}","");
+        message = message.replace("¡","");
+        message = message.replace("!","");
+        message = message.replace("¿","");
+        message = message.replace("?","");
         return message;
     }
 

@@ -47,11 +47,11 @@ public class Runner {
         }
         SimpleMessageConverter converter = new SimpleMessageConverter();
         Message msg = converter.toMessage(text, new MessageProperties());
+        String ex = rabbitTemplate.getExchange();
         rabbitTemplate.convertAndSend(exchange, "", msg);
     }
 
     public void notify(String message) throws Exception {
-        // System.out.println("Sending message: <" + message + "> to everyone");
         String[] parts = message.split(":::");
         String exchange = "notifications";
         String text = parts[0] + ":::";

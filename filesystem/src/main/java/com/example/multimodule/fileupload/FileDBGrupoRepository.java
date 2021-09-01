@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface FileDBGrupoRepository extends JpaRepository<FileDBGrupo, Long> {
     List<FileDBGrupo> findByName(String name);
+    void deleteByName(String name);
 }

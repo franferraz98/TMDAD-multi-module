@@ -6,7 +6,9 @@ function searchFile() {
      }
 
     var req2 = new XMLHttpRequest();
-    req2.open('GET', 'http://localhost:8080/files/' + fileid, false);
+    let ref = window.location.href;
+    let parts = ref.split("/database");
+    req2.open('GET', parts[0] + '/files/' + fileid, false);
     req2.send(null);
     if (req2.status == 200)
       console.log(req2.responseURL);

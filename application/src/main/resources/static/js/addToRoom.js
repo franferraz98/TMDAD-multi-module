@@ -8,7 +8,9 @@ function createGroup() {
     msg = msg.concat("&");
     msg = msg.concat(UserRoom);
     console.log(msg);
-    req.open('POST', 'http://localhost:8080/Grupos/{name}/addToGroup', false);
+    let ref = window.location.href;
+    let parts = ref.split("/index");
+    req.open('POST', parts[0] + '/Grupos/{name}/addToGroup', false);
     req.send(msg);
     if (req.status == 200) {
         console.log("Grupo CREADO");

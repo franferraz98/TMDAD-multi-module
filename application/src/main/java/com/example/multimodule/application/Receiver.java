@@ -74,6 +74,29 @@ public class Receiver {
          */
     }
 
+    public void removeFromRoom(final JsonMessage jsonMessage){
+        String text = jsonMessage.getText();
+        // System.out.println(text);
+        String[] parts = text.split(":::");
+        String room = parts[0];
+        String user = parts[1];
+
+        Queue queue = new Queue(user, true);
+        FanoutExchange exchange = new FanoutExchange(room);
+        Binding binding = BindingBuilder.bind(queue).to(exchange);
+
+        rabbitAdmin.removeBinding(binding);
+    }
+
+    public void deleteRoom(final JsonMessage jsonMessage){
+        String room = jsonMessage.getText();
+        System.out.println(room);
+        // System.out.println(text);
+        FanoutExchange exchange = new FanoutExchange(room);
+        boolean b =  rabbitAdmin.deleteExchange(room);
+        System.out.println(b);
+    }
+
     @MessageMapping("/addToRoom")
     public void addToRoom (final JsonMessage jsonMessage){
         String text = jsonMessage.getText();

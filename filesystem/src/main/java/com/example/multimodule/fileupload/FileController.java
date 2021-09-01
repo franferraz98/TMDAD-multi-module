@@ -217,6 +217,15 @@
             return Usuario.get(0).toString();
         }
 
+        @RequestMapping(value = "/getMessages/{groupName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+        public @ResponseBody
+        String getMessages(@PathVariable("groupName") String groupName) {
+             FileDBGrupo grupo = repositoryGrupo.findByName(groupName).get(0);
+             Set<Mensajes> mensajes = grupo.getMensajesGrupo();
+
+             return mensajes.toString();
+        }
+
         @GetMapping("/Usuarios/{id}")
         EntityModel<FileDbUsuarios> one(@PathVariable("id") Long id) {
             System.out.println(id);
@@ -450,6 +459,44 @@
             }
             return ResponseEntity.noContent().build();
         }
+
+        public int deleteUserFromGroupSpring(String name, String name2) {
+            try {
+                FileDBGrupo g = repositoryGrupo.findByName(name).get(0);
+                g.deleteMember(repository.findByName(name2).get(0));
+                repositoryGrupo.save(g);
+                return 0;
+            } catch (Exception e) {
+                System.err.println("Error when deleting " + e);
+                return 1;
+            }
+        }
+
+
+
+        public int deleteGroup(String username, String groupname) {
+
+            FileDbUsuarios usuario1 = repository.findByName(username).get(0);
+            FileDBGrupo grupo = repositoryGrupo.findByName(groupname).get(0);
+            Set<FileDbUsuarios> c = grupo.getPertenece();
+            Iterator<FileDbUsuarios> iter = c.iterator();
+            FileDbUsuarios first = iter.next();
+            if(first.getName().equals(usuario1.getName())){
+                Iterator<FileDbUsuarios> iter2 = c.iterator();
+                while (iter2.hasNext()){
+                    FileDbUsuarios usu = iter2.next();
+                    Set<FileDBGrupo> g = usu.getGruposSet();
+                    g.remove(grupo);
+                    usu.setGruposSet(g);
+                    repository.save(usu);
+                }
+                repositoryGrupo.deleteById(grupo.getId());
+                return 0;
+            } else{
+                return 1;
+            }
+        }
+
 
         @PostMapping("/Mensajes")
         ResponseEntity<ResponseMessage> newMensaje(@RequestBody String body) {
